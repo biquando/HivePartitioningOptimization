@@ -22,5 +22,14 @@ python3 -m venv venv
 . venv/bin/activate
 pip install -r requirements.txt
 
-python example.py
+python hive_example.py
 ```
+
+## Running the benchmark
+
+```sh
+python src/test.py
+```
+
+This will initialize the tables, generate some fake data (10 MiB by default),
+and run 50 queries (see `src/queries.py`).
