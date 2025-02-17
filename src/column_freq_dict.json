@@ -1,0 +1,25 @@
+{
+    "users": {
+        "created_at": 1
+    },
+    "products": {
+        "stock": 1,
+        "category": 3,
+        "product_id": 1
+    },
+    "orders": {
+        "order_date": 6,
+        "user_id": 11,
+        "order_id": 1
+    },
+    "order_items": {
+        "product_id": 5,
+        "order_id": 2,
+        "quantity": 1
+    },
+    "reviews": {
+        "rating": 1,
+        "product_id": 6,
+        "user_id": 2
+    }
+}
