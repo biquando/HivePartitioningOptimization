@@ -26,7 +26,7 @@ class Table:
         self.partition = (
             {} if partition is None else {name: type_ for name, type_ in partition}
         )
-        self.cardinality = {}  # Dictionary to store column cardinalities
+        self.cardinalities = {}  # Dictionary to store column cardinalities
 
     def compute_cardinality(self, cursor: Cursor):
         """Compute the cardinality (number of unique values) for each column in the table.
@@ -45,7 +45,7 @@ class Table:
             """
             cursor.execute(query)
             result = cursor.fetchone()
-            self.cardinality[col_name] = result[0] if result else 0
+            self.cardinalities[col_name] = result[0] if result else 0
 
     def create(self, cursor: Cursor):
         """Create the table in Hive.
@@ -141,6 +141,3 @@ FIELDS TERMINATED BY ','"""
         # Update the object's state to reflect new partitioning
         self.columns = new_columns
         self.partition = new_partition
-
-        # Recompute cardinalities after repartitioning
-        self.compute_cardinality(cursor)

@@ -1,0 +1,11 @@
+Algorithm 1 results for table reviews (sorted by execution time):
+Partition Columns              Execution Time (s)   Cardinality Product       Time Difference (%)
+--------------------------------------------------------------------------------
+['rating']                     36.9867              5                         -0.87
+[]                             37.3126              1                         0.0
+['product_id']                 61.4361              998                       64.65
+['user_id']                    inf                  1899                      None
+['product_id', 'user_id']      inf                  1895202                   None
+['product_id', 'rating']       inf                  4990                      None
+['user_id', 'rating']          inf                  9495                      None
+['product_id', 'user_id', 'rating'] inf                  9476010                   None

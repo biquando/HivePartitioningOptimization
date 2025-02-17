@@ -1,0 +1,5 @@
+Algorithm 1 results for table users (sorted by execution time):
+Partition Columns              Execution Time (s)   Cardinality Product       Time Difference (%)
+--------------------------------------------------------------------------------
+[]                             13.7655              1                         0.0
+['created_at']                 inf                  2000                      None
