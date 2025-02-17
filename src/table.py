@@ -1,3 +1,4 @@
+# table.py
 from pyhive.hive import Cursor
 import time
 

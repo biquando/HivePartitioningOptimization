@@ -1,0 +1,34 @@
+{
+    "users": [
+        ["user_id", "INT"],
+        ["name", "STRING"],
+        ["email", "STRING"],
+        ["created_at", "TIMESTAMP"]
+    ],
+    "products": [
+        ["product_id", "INT"],
+        ["name", "STRING"],
+        ["category", "STRING"],
+        ["price", "DECIMAL(10,2)"],
+        ["stock", "INT"]
+    ],
+    "orders": [
+        ["order_id", "INT"],
+        ["user_id", "INT"],
+        ["order_date", "TIMESTAMP"],
+        ["total_amount", "DECIMAL(10,2)"]
+    ],
+    "order_items": [
+        ["order_id", "INT"],
+        ["product_id", "INT"],
+        ["quantity", "INT"],
+        ["price", "DECIMAL(10,2)"]
+    ],
+    "reviews": [
+        ["review_id", "INT"],
+        ["user_id", "INT"],
+        ["product_id", "INT"],
+        ["rating", "INT"],
+        ["comment", "STRING"]
+    ]
+}

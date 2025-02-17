@@ -1,3 +1,4 @@
+# fake_data.py
 import csv
 import random
 from faker import Faker

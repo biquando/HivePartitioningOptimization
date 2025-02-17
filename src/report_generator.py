@@ -1,42 +1,102 @@
 import os
+from datetime import datetime
 
 
-def write_report(results, table_name, algorithm_name):
-    """Writes the results to a report file in the specified directory."""
-    # Ensure the directory exists
-    report_dir = f"algorithm_reports/{algorithm_name.lower()}"
-    if not os.path.exists(report_dir):
-        os.makedirs(report_dir)
+def write_consolidated_report(all_results, algorithm_name, metadata=None):
+    """Writes the results for all tables to a single directory.
 
-    # Define the filename based on the table name
-    report_filename = f"{report_dir}/{table_name}_report.txt"
+    Args:
+        all_results: Dictionary mapping table names to their results
+        algorithm_name: Name of the algorithm used
+        metadata: Dictionary containing run metadata (data_size, total_time, etc.)
+    """
+    # Generate a timestamp for the folder name
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    # Write the results for this table to the file
-    with open(report_filename, "w") as file:
-        file.write(
-            f"{algorithm_name} results for table {table_name} (sorted by execution time):\n"
-        )
-        file.write(
-            f"{'Partition Columns':<30} {'Execution Time (s)':<20} {'Cardinality Product':<25} {'Time Difference (%)'}\n"
-        )
-        file.write(f"{'-' * 80}\n")
+    # Create the directory with timestamp
+    report_dir = f"algorithm_reports/{algorithm_name.lower()}_{timestamp}"
+    os.makedirs(report_dir, exist_ok=True)
 
-        # Find the baseline (no partitioning) execution time
-        no_partition_time = next(
-            (time for columns, time, _ in results if columns == []), None
-        )
+    # Write metadata summary file
+    summary_filename = f"{report_dir}/summary.txt"
+    with open(summary_filename, "w") as file:
+        file.write("Algorithm Run Summary\n")
+        file.write("===================\n\n")
 
-        for columns, time, cardinality_product in results:
-            if no_partition_time is not None and time != float("inf"):
-                # Calculate percentage time difference from no partitioning
-                time_diff_percent = (
-                    (time - no_partition_time) / no_partition_time
-                ) * 100
-            else:
-                time_diff_percent = None  # If no time difference can be calculated (e.g., exceeds limit)
-
+        # Write metadata if provided
+        if metadata:
+            file.write("Run Configuration:\n")
+            file.write("-----------------\n")
+            file.write(f"Algorithm: {algorithm_name}\n")
+            file.write(f"Data Size: {metadata.get('data_size', 'N/A')} MiB\n")
+            file.write(f"Tables Processed: {', '.join(all_results.keys())}\n")
             file.write(
-                f"{str(columns):<30} {round(time, 4):<20} {cardinality_product:<25} {time_diff_percent if time_diff_percent is None else round(time_diff_percent, 2)}\n"
+                f"Total Execution Time: {metadata.get('total_time', 'N/A'):.2f} seconds\n"
+            )
+            file.write(
+                f"Initial Query Time: {metadata.get('initial_query_time', 'N/A'):.2f} seconds\n\n"
             )
 
-    print(f"Results for table {table_name} have been written to {report_filename}")
+        # Write summary statistics for each table
+        file.write("Per-Table Summary:\n")
+        file.write("----------------\n")
+        for table_name, results in all_results.items():
+            file.write(f"\n{table_name}:\n")
+
+            # Get baseline and best times
+            baseline_time = next(
+                (time for columns, time, _ in results if columns == []), None
+            )
+            best_result = min(
+                results, key=lambda x: x[1] if x[1] != float("inf") else float("inf")
+            )
+
+            file.write(f"  Baseline Time: {baseline_time:.2f} seconds\n")
+            file.write(f"  Best Time: {best_result[1]:.2f} seconds\n")
+            file.write(
+                f"  Best Partition: {best_result[0] if best_result[0] else 'None'}\n"
+            )
+            if baseline_time and best_result[1] != float("inf"):
+                improvement = ((baseline_time - best_result[1]) / baseline_time) * 100
+                file.write(f"  Improvement: {improvement:.2f}%\n")
+
+    # Write detailed results for each table
+    for table_name, results in all_results.items():
+        report_filename = f"{report_dir}/{table_name}_report.txt"
+
+        with open(report_filename, "w") as file:
+            # Write table metadata
+            file.write(f"Detailed Results for {table_name}\n")
+            file.write("=" * (20 + len(table_name)) + "\n\n")
+
+            if metadata:
+                file.write(f"Algorithm: {algorithm_name}\n")
+                file.write(f"Data Size: {metadata.get('data_size', 'N/A')} MiB\n")
+                file.write(f"Run Timestamp: {timestamp}\n\n")
+
+            # Write the detailed results
+            file.write(
+                f"{'Partition Columns':<30} {'Execution Time (s)':<20} {'Cardinality Product':<25} {'Time Difference (%)'}\n"
+            )
+            file.write(f"{'-' * 80}\n")
+
+            # Find the baseline execution time
+            no_partition_time = next(
+                (time for columns, time, _ in results if columns == []), None
+            )
+
+            for columns, time, cardinality_product in results:
+                if no_partition_time is not None and time != float("inf"):
+                    time_diff_percent = (
+                        (time - no_partition_time) / no_partition_time
+                    ) * 100
+                else:
+                    time_diff_percent = None
+
+                file.write(
+                    f"{str(columns):<30} {round(time, 4):<20} {cardinality_product:<25} {time_diff_percent if time_diff_percent is None else round(time_diff_percent, 2)}\n"
+                )
+
+        print(f"Results for table {table_name} have been written to {report_filename}")
+
+    print(f"All results and summary have been written to {report_dir}")
