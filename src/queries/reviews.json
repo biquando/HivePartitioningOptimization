@@ -1,0 +1,1 @@
+["SELECT * FROM reviews", "SELECT review_id, user_id FROM reviews", "SELECT COUNT(*) FROM reviews", "SELECT product_id, AVG(rating) FROM reviews GROUP BY product_id", "SELECT review_id, comment FROM reviews WHERE rating = 5", "SELECT user_id, MAX(rating) AS max_rating FROM reviews GROUP BY user_id"]

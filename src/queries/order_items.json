@@ -1,0 +1,1 @@
+["SELECT * FROM order_items", "SELECT order_id, product_id FROM order_items", "SELECT COUNT(*) FROM order_items", "SELECT order_id, SUM(quantity) FROM order_items GROUP BY order_id", "SELECT product_id, AVG(price) AS avg_price FROM order_items GROUP BY product_id", "SELECT order_id, SUM(quantity * price) AS total_price FROM order_items GROUP BY order_id"]
