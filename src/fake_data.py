@@ -1,21 +1,28 @@
 # fake_data.py
 import csv
+from datetime import datetime
 import random
 from faker import Faker
 
-fake = Faker()
+# For each table, there is guaranteed to be one column with
+# at most this cardinality
+CARDINALITY = 1000
 
+
+fake = Faker()
 
 # Generate Users
 def generate_users(n=1000):
     users = []
     for _ in range(n):
+        create_time = fake.date_time_between(
+            start_date=f"-{CARDINALITY-1}d", end_date="now")
         users.append(
             [
                 fake.unique.random_int(min=1, max=n * 1000),
                 fake.name(),
                 fake.email(),
-                fake.date_time_between(start_date="-2y", end_date="now").isoformat(),
+                datetime(create_time.year, create_time.month, create_time.day),
             ]
         )
     return users
