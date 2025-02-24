@@ -1,54 +1,53 @@
-["SELECT * FROM users", 
-"SELECT name, email FROM users", 
-"SELECT COUNT(*) FROM users",
-"SELECT name, email FROM users WHERE created_at > '2023-01-01'",
-"SELECT u.name, o.order_id FROM users u JOIN orders o ON u.user_id = o.user_id",
-"SELECT u.name, r.rating FROM users u JOIN reviews r ON u.user_id = r.user_id", 
-"SELECT u.name, o.total_amount FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.total_amount > 100", 
-"SELECT u.name, r.rating FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating = 5", 
-"SELECT u.name, COUNT(o.order_id) FROM users u JOIN orders o ON u.user_id = o.user_id GROUP BY u.name", 
-"SELECT u.name, AVG(r.rating) FROM users u JOIN reviews r ON u.user_id = r.user_id GROUP BY u.name", 
-"SELECT u.name, MAX(o.total_amount) FROM users u JOIN orders o ON u.user_id = o.user_id GROUP BY u.name", 
-"SELECT u.name, MIN(r.rating) FROM users u JOIN reviews r ON u.user_id = r.user_id GROUP BY u.name", 
-"SELECT u.name, o.order_date FROM users u JOIN orders o ON u.user_id = o.user_id ORDER BY o.order_date DESC", 
-"SELECT u.name, r.rating FROM users u JOIN reviews r ON u.user_id = r.user_id ORDER BY r.rating DESC", 
-"SELECT u.name, o.total_amount FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.total_amount BETWEEN 100 AND 500", 
-"SELECT u.name, r.rating FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating BETWEEN 3 AND 5", 
-"SELECT u.name, COUNT(o.order_id) FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.order_date > '2023-01-01' GROUP BY u.name", 
-"SELECT u.name, AVG(r.rating) FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating > 3 GROUP BY u.name", 
-"SELECT u.name, MAX(o.total_amount) FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.order_date > '2023-01-01' GROUP BY u.name", 
-"SELECT u.name, MIN(r.rating) FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating > 3 GROUP BY u.name", 
-"SELECT u.name, o.order_date FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.order_date > '2023-01-01' ORDER BY o.order_date DESC", 
-"SELECT u.name, r.rating FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating > 3 ORDER BY r.rating DESC", 
-"SELECT u.name, o.total_amount FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.total_amount BETWEEN 100 AND 500 AND o.order_date > '2023-01-01'", 
-"SELECT u.name, r.rating FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating BETWEEN 3 AND 5 AND r.comment LIKE '%good%'",
-"SELECT u.name, COUNT(o.order_id) FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.order_date > '2023-01-01' AND o.total_amount > 100 GROUP BY u.name", 
-"SELECT u.name, AVG(r.rating) FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating > 3 AND r.comment LIKE '%good%' GROUP BY u.name", 
-"SELECT u.name, MAX(o.total_amount) FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.order_date > '2023-01-01' AND o.total_amount > 100 GROUP BY u.name", 
-"SELECT u.name, MIN(r.rating) FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating > 3 AND r.comment LIKE '%good%' GROUP BY u.name", 
-"SELECT u.name, o.order_date FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.order_date > '2023-01-01' AND o.total_amount > 100 ORDER BY o.order_date DESC", 
-"SELECT u.name, r.rating FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating > 3 AND r.comment LIKE '%good%' ORDER BY r.rating DESC", 
-"SELECT u.name, o.total_amount FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.total_amount BETWEEN 100 AND 500 AND o.order_date > '2023-01-01' AND o.total_amount > 100", 
-"SELECT u.name, r.rating FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating BETWEEN 3 AND 5 AND r.comment LIKE '%good%' AND r.rating > 3", 
-"SELECT u.name, COUNT(o.order_id) FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.order_date > '2023-01-01' AND o.total_amount > 100 AND o.order_date > '2023-01-01' GROUP BY u.name", 
-"SELECT u.name, AVG(r.rating) FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating > 3 AND r.comment LIKE '%good%' AND r.rating > 3 GROUP BY u.name", 
-"SELECT u.name, MAX(o.total_amount) FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.order_date > '2023-01-01' AND o.total_amount > 100 AND o.order_date > '2023-01-01' GROUP BY u.name", 
-"SELECT u.name, COUNT(o.order_id) AS order_count FROM users u JOIN orders o ON u.user_id = o.user_id GROUP BY u.name", 
-"SELECT u.name, AVG(r.rating) AS avg_rating FROM users u JOIN reviews r ON u.user_id = r.user_id GROUP BY u.name", 
-"SELECT u.name, MAX(o.total_amount) AS max_amount FROM users u JOIN orders o ON u.user_id = o.user_id GROUP BY u.name", 
-"SELECT u.name, MIN(r.rating) AS min_rating FROM users u JOIN reviews r ON u.user_id = r.user_id GROUP BY u.name", 
-"SELECT u.name, o.order_date FROM users u JOIN orders o ON u.user_id = o.user_id ORDER BY o.order_date ASC", 
-"SELECT u.name, r.rating FROM users u JOIN reviews r ON u.user_id = r.user_id ORDER BY r.rating ASC", 
-"SELECT u.name, o.total_amount FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.total_amount < 100", 
-"SELECT u.name, r.rating FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating < 3", 
-"SELECT u.name, COUNT(o.order_id) FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.order_date < '2023-01-01' GROUP BY u.name", 
-"SELECT u.name, AVG(r.rating) FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating < 3 GROUP BY u.name", 
-"SELECT u.name, MAX(o.total_amount) FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.order_date < '2023-01-01' GROUP BY u.name", 
-"SELECT u.name, MIN(r.rating) FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating < 3 GROUP BY u.name", 
-"SELECT u.name, o.order_date FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.order_date < '2023-01-01' ORDER BY o.order_date ASC", 
-"SELECT u.name, r.rating FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating < 3 ORDER BY r.rating ASC", 
-"SELECT u.name, o.total_amount FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.total_amount BETWEEN 50 AND 100", 
-"SELECT u.name, r.rating FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating BETWEEN 1 AND 2", 
-"SELECT u.name, COUNT(o.order_id) FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.order_date < '2023-01-01' AND o.total_amount < 100 GROUP BY u.name", 
-"SELECT u.name, AVG(r.rating) FROM users u JOIN reviews r ON u.user_id = r.user_id WHERE r.rating < 3 AND r.comment LIKE '%bad%' GROUP BY u.name"
+[
+    "SELECT COUNT(*) FROM users WHERE name = 'John Smith'",
+    
+    "SELECT user_id, email, created_at FROM users WHERE name = 'Sarah Johnson' AND created_at >= '2024-01-01'",
+    
+    "WITH user_cohorts AS (SELECT EXTRACT(YEAR FROM created_at) AS cohort_year, COUNT(*) AS user_count FROM users WHERE name = 'Michael Brown' GROUP BY EXTRACT(YEAR FROM created_at)) SELECT cohort_year, user_count, SUM(user_count) OVER (ORDER BY cohort_year) AS cumulative_users FROM user_cohorts",
+    
+    "SELECT DATE_FORMAT(created_at, 'yyyy-MM') AS month, COUNT(*) AS signup_count FROM users WHERE name = 'Emma Wilson' GROUP BY DATE_FORMAT(created_at, 'yyyy-MM') ORDER BY month",
+    
+    "SELECT user_id, DATEDIFF(CURRENT_DATE, created_at) AS account_age_days FROM users WHERE name = 'James Taylor' ORDER BY account_age_days DESC",
+    
+    "SELECT SUBSTR(email, INSTR(email, '@') + 1) AS email_domain, COUNT(*) AS domain_count FROM users WHERE name = 'Robert Davis' GROUP BY SUBSTR(email, INSTR(email, '@') + 1) ORDER BY domain_count DESC",
+    
+    "SELECT CASE WHEN created_at < '2020-01-01' THEN 'Early Adopter' WHEN created_at < '2023-01-01' THEN 'Regular User' ELSE 'New User' END AS user_segment, COUNT(*) FROM users WHERE name = 'Lisa Johnson' GROUP BY CASE WHEN created_at < '2020-01-01' THEN 'Early Adopter' WHEN created_at < '2023-01-01' THEN 'Regular User' ELSE 'New User' END",
+    
+    "SELECT name, COUNT(*) AS name_count FROM users WHERE name = 'David Miller' GROUP BY name HAVING COUNT(*) > 1",
+    
+    "SELECT user_id, name, FIRST_VALUE(created_at) OVER (PARTITION BY name ORDER BY created_at) AS earliest_user_with_name FROM users WHERE name = 'Jennifer White'",
+    
+    "SELECT YEAR(created_at) AS signup_year, MONTH(created_at) AS signup_month, COUNT(*) AS monthly_users FROM users WHERE name = 'Thomas Anderson' GROUP BY YEAR(created_at), MONTH(created_at) ORDER BY signup_year, signup_month",
+    
+    "SELECT user_id, DENSE_RANK() OVER (PARTITION BY name ORDER BY created_at) AS signup_order FROM users WHERE name = 'Elizabeth Clark'",
+    
+    "WITH weekly_signups AS (SELECT WEEKOFYEAR(created_at) AS week_num, COUNT(*) AS signup_count FROM users WHERE name = 'Christopher Lee' AND YEAR(created_at) = 2024 GROUP BY WEEKOFYEAR(created_at)) SELECT week_num, signup_count, AVG(signup_count) OVER (ORDER BY week_num ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS rolling_avg FROM weekly_signups",
+    
+    "SELECT name, user_id, NTILE(4) OVER (PARTITION BY name ORDER BY created_at) AS account_age_quartile FROM users WHERE name = 'Amanda Martinez'",
+    
+    "SELECT user_id, created_at, LAG(created_at) OVER (PARTITION BY name ORDER BY created_at) AS previous_signup_date, DATEDIFF(created_at, LAG(created_at) OVER (PARTITION BY name ORDER BY created_at)) AS days_since_last_signup FROM users WHERE name = 'Daniel Wilson'",
+    
+    "WITH name_metrics AS (SELECT created_at, ROW_NUMBER() OVER (PARTITION BY name ORDER BY created_at) AS sign_up_order FROM users WHERE name = 'William Taylor') SELECT DATEDIFF(MAX(created_at), MIN(created_at)) AS days_to_reach_5_users FROM name_metrics WHERE sign_up_order <= 5",
+    
+    "SELECT user_id, created_at, PERCENT_RANK() OVER (PARTITION BY name ORDER BY created_at) AS account_age_percentile FROM users WHERE name = 'Jessica Thompson'",
+    
+    "WITH domain_stats AS (SELECT SUBSTR(email, INSTR(email, '@') + 1) AS domain, COUNT(*) AS domain_count FROM users WHERE name = 'Kevin Harris' GROUP BY SUBSTR(email, INSTR(email, '@') + 1)) SELECT domain, domain_count, domain_count * 100.0 / SUM(domain_count) OVER () AS percentage FROM domain_stats ORDER BY domain_count DESC",
+    
+    "SELECT QUARTER(created_at) AS quarter, COUNT(*) AS quarterly_signups, SUM(COUNT(*)) OVER (ORDER BY QUARTER(created_at)) AS running_total FROM users WHERE name = 'Patricia Lewis' AND YEAR(created_at) = 2024 GROUP BY QUARTER(created_at)",
+    
+    "SELECT DATE_FORMAT(created_at, 'EEEE') AS day_of_week, COUNT(*) AS signup_count FROM users WHERE name = 'Mark Johnson' GROUP BY DATE_FORMAT(created_at, 'EEEE') ORDER BY CASE DATE_FORMAT(created_at, 'EEEE') WHEN 'Monday' THEN 1 WHEN 'Tuesday' THEN 2 WHEN 'Wednesday' THEN 3 WHEN 'Thursday' THEN 4 WHEN 'Friday' THEN 5 WHEN 'Saturday' THEN 6 WHEN 'Sunday' THEN 7 END",
+    
+    "SELECT COUNT(*) FROM users",
+    
+    "SELECT AVG(DATEDIFF(CURRENT_DATE, created_at)) AS avg_account_age_days FROM users",
+    
+    "SELECT DISTINCT name FROM users ORDER BY name",
+    
+    "SELECT name, COUNT(*) AS name_count FROM users GROUP BY name ORDER BY name_count DESC LIMIT 10",
+    
+    "SELECT DATE_FORMAT(created_at, 'yyyy-MM') AS signup_month, COUNT(*) AS user_count FROM users GROUP BY DATE_FORMAT(created_at, 'yyyy-MM') ORDER BY signup_month",
+    
+    "SELECT COUNT(*) FROM users WHERE name LIKE '%Smith%'",
+    
+    "SELECT SUBSTR(email, INSTR(email, '@') + 1) AS email_domain, COUNT(*) AS domain_count FROM users GROUP BY SUBSTR(email, INSTR(email, '@') + 1) ORDER BY domain_count DESC LIMIT 5"
 ]

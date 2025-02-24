@@ -16,10 +16,10 @@ fake = Faker()
 # Generate Users
 def generate_users(
     n=1000,
-    id_cardinality=500,
-    name_cardinality=40,
-    email_cardinality=11,
-    date_cardinality=18,
+    id_cardinality=50000,
+    name_cardinality=40000,
+    email_cardinality=11000,
+    date_cardinality=18000,
 ):
     # Set default cardinalities if not specified
     id_cardinality = id_cardinality or n
