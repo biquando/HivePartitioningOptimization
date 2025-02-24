@@ -5,7 +5,8 @@
     "products": {
         "stock": 1,
         "category": 3,
-        "product_id": 1
+        "product_id": 1,
+        "price": 3
     },
     "orders": {
         "order_date": 6,
@@ -18,8 +19,8 @@
         "quantity": 1
     },
     "reviews": {
-        "rating": 1,
+        "rating": 5,
         "product_id": 6,
-        "user_id": 2
+        "comment": 4
     }
 }

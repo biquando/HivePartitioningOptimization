@@ -18,11 +18,11 @@ class Testbench:
         self.cursor = self.conn.cursor()
 
         # Correct memory settings
-        self.cursor.execute("SET mapreduce.map.memory.mb=3072")
-        self.cursor.execute("SET mapreduce.reduce.memory.mb=3072")
-        self.cursor.execute("SET hive.map.aggr.hash.percentmemory=0.5")
-        self.cursor.execute("SET hive.exec.reducers.max=1000")
-        self.cursor.execute("SET hive.vectorized.execution.enabled=true")
+        # self.cursor.execute("SET mapreduce.map.memory.mb=3072")
+        # self.cursor.execute("SET mapreduce.reduce.memory.mb=3072")
+        # self.cursor.execute("SET hive.map.aggr.hash.percentmemory=0.5")
+        # self.cursor.execute("SET hive.exec.reducers.max=1000")
+        # self.cursor.execute("SET hive.vectorized.execution.enabled=true")
 
         # Parallel execution
         self.cursor.execute("SET hive.exec.parallel=true")

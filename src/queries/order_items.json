@@ -1,1 +1,21 @@
-["SELECT * FROM order_items", "SELECT order_id, product_id FROM order_items", "SELECT COUNT(*) FROM order_items", "SELECT order_id, SUM(quantity) FROM order_items GROUP BY order_id", "SELECT product_id, AVG(price) AS avg_price FROM order_items GROUP BY product_id", "SELECT order_id, SUM(quantity * price) AS total_price FROM order_items GROUP BY order_id"]
+[
+    "SELECT order_id, SUM(quantity * price) as total_revenue, COUNT(DISTINCT product_id) as unique_products FROM order_items WHERE order_id BETWEEN 10000 AND 20000 GROUP BY order_id",
+    
+    "SELECT * FROM order_items WHERE order_id IN (5001, 5002, 5003, 5004, 5005) ORDER BY product_id",
+    
+    "SELECT FLOOR(order_id/1000)*1000 as order_batch, AVG(price) as avg_price, SUM(quantity) as total_quantity FROM order_items WHERE order_id >= 50000 AND order_id < 60000 GROUP BY FLOOR(order_id/1000)*1000",
+    
+    "SELECT order_id, MAX(price) as max_item_price, MIN(price) as min_item_price, AVG(price * quantity) as avg_order_value FROM order_items WHERE order_id BETWEEN 1000 AND 9999 GROUP BY order_id HAVING COUNT(*) > 5",
+    
+    "SELECT oi.order_id, SUM(oi.quantity) as total_items FROM order_items oi JOIN orders o ON oi.order_id = o.order_id WHERE oi.order_id >= 30000 AND oi.order_id < 40000 GROUP BY oi.order_id",
+    
+    "SELECT t.order_id, LAG(t.order_total) OVER (ORDER BY t.order_id) as prev_order_total, t.order_total as current_order_total FROM (SELECT order_id, SUM(price * quantity) as order_total FROM order_items WHERE order_id BETWEEN 40000 AND 45000 GROUP BY order_id) t",
+    
+    "SELECT order_id, product_id, quantity, SUM(quantity) OVER (PARTITION BY order_id ORDER BY price DESC) as running_quantity FROM order_items WHERE order_id >= 70000 AND order_id < 80000",
+    
+    "WITH order_metrics AS (SELECT order_id, SUM(quantity * price) as total_value FROM order_items WHERE order_id BETWEEN 90000 AND 100000 GROUP BY order_id) SELECT order_id, total_value, AVG(total_value) OVER () as avg_batch_value FROM order_metrics",
+    
+    "SELECT order_id, COUNT(*) as items_count, SUM(quantity) as total_quantity FROM order_items WHERE order_id >= 20000 AND order_id < 25000 AND order_id % 100 = 0 GROUP BY order_id",
+    
+    "SELECT order_decile, COUNT(DISTINCT order_id) as num_orders, AVG(price) as avg_price, SUM(quantity) as total_quantity, COUNT(DISTINCT product_id) as unique_products FROM (SELECT *, NTILE(10) OVER (ORDER BY order_id) as order_decile FROM order_items WHERE order_id BETWEEN 50000 AND 60000) t GROUP BY order_decile"
+]

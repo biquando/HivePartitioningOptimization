@@ -77,13 +77,16 @@ def generate_products(n=500):
         "Art & Crafts",
         "Industrial",
     ]
+    price_cardinality = 21
+    price_pool = [random.randint(1, 10000) for _ in range(price_cardinality)]
+
     for _ in range(n):
         products.append(
             [
                 fake.unique.random_int(min=1, max=n * 1000),
                 fake.word().capitalize(),
                 random.choice(categories),
-                round(random.uniform(5.0, 500.0), 2),
+                random.choice(price_pool),
                 random.randint(0, 100),
             ]
         )
@@ -147,13 +150,12 @@ def generate_order_items(
     items_per_order_cardinality=17,  # How many different numbers of items per order
     product_per_order_cardinality=55,  # How many different products can be in an order
     quantity_cardinality=11,  # How many different quantity values
-    price_cardinality=81,  # How many different price points
+    price_cardinality=14,  # How many different price points
 ):
     # Set default cardinalities
     items_per_order_cardinality = items_per_order_cardinality or 5  # Default 1-5 items
     product_per_order_cardinality = product_per_order_cardinality or len(products)
     quantity_cardinality = quantity_cardinality or 3  # Default 1-3 quantities
-    price_cardinality = price_cardinality or len(set(p[3] for p in products))
 
     order_items = []
 
@@ -162,13 +164,7 @@ def generate_order_items(
     quantity_pool = list(range(1, quantity_cardinality + 1))
 
     # Create price pool based on available product prices
-    unique_prices = sorted(set(p[3] for p in products))
-    if len(unique_prices) > price_cardinality:
-        # Take evenly spaced samples if we need to reduce cardinality
-        step = len(unique_prices) // price_cardinality
-        price_pool = unique_prices[::step][:price_cardinality]
-    else:
-        price_pool = unique_prices
+    price_pool = [random.randint(1, 100) for _ in range(price_cardinality)]
 
     # Process each order
     for order in orders:
