@@ -1,6 +1,5 @@
 # parition_manager.py
 from table import Table
-from queries import queries
 import time
 
 
@@ -20,6 +19,10 @@ class PartitionManager:
             cardinality = table.cardinalities[col]
             cardinalities.append((col, cardinality))
             product *= cardinality
+
+        print(
+            f"Cardinalities for {table_name} and cols {repartition_columns}: {cardinalities}"
+        )
         return product <= self.MAX_PARTITION_PRODUCT, product
 
     def repartition(self, table_name, partition_columns):
@@ -53,7 +56,7 @@ class PartitionManager:
         )
         if valid_partition:
             self.repartition(table_name, repartition_columns)
-            return query_runner.run(), cardinality_product
+            return query_runner.run(table_name), cardinality_product
         else:
             print(
                 f"Repartitioning {table_name} by {repartition_columns} exceeds max partitions."
@@ -80,7 +83,9 @@ class PartitionManager:
         top_columns = [col for col, _ in sorted_columns[:3]]
 
         # Test no partition (baseline case)
-        exec_time_no_partition = query_runner.run()  # Run without any repartitioning
+        exec_time_no_partition = query_runner.run(
+            table_name
+        )  # Run without any repartitioning
         query_execution_times.append(
             ([], exec_time_no_partition, 1)
         )  # No partition, product = 1 (or can be set as 0)

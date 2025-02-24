@@ -1,7 +1,7 @@
-import json
+# import json
 
-with open('src/queries/all.json', 'r') as f:
-    queries = json.load(f)
+# with open('src/queries/all.json', 'r') as f:
+#     queries = json.load(f)
 
 # # queries.py
 # queries = [
@@ -28,8 +28,8 @@ with open('src/queries/all.json', 'r') as f:
 #     # 10
 #     f"SELECT product_id, COUNT(*) AS review_count FROM reviews GROUP BY product_id ORDER BY review_count DESC LIMIT 5",
 #     # 11
-#     f"""SELECT user_id, AVG(total_amount) AS avg_order_value 
-# FROM orders 
+#     f"""SELECT user_id, AVG(total_amount) AS avg_order_value
+# FROM orders
 # GROUP BY user_id""",
 #     # Join queries
 #     # 12
@@ -171,9 +171,9 @@ with open('src/queries/all.json', 'r') as f:
 #     # 48
 #     f"SELECT category, MAX(price) AS max_price FROM products GROUP BY category",
 #     # 49
-#     f"""SELECT product_id, 
-#        (COUNT(CASE WHEN rating = 5 THEN 1 END) * 100.0 / COUNT(*)) AS percentage_5_star 
-# FROM reviews 
+#     f"""SELECT product_id,
+#        (COUNT(CASE WHEN rating = 5 THEN 1 END) * 100.0 / COUNT(*)) AS percentage_5_star
+# FROM reviews
 # GROUP BY product_id""",
 #     # 50
 #     f"""SELECT DISTINCT o.user_id

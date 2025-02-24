@@ -30,23 +30,37 @@ class Table:
         self.cardinalities = {}  # Dictionary to store column cardinalities
 
     def compute_cardinality(self, cursor: Cursor):
-        """Compute the cardinality (number of unique values) for each column in the table.
-        Updates the cardinality dictionary with results.
-
-        Args:
-            cursor: The cursor instance obtained from the Hive connection.
-        """
-        # Get all columns (both regular and partition)
+        """Compute the cardinality (number of unique values) for each column."""
         all_columns = list(self.columns.keys()) + list(self.partition.keys())
 
         for col_name in all_columns:
-            query = f"""
-            SELECT COUNT(DISTINCT {col_name}) as cardinality 
-            FROM {self.name}
-            """
+            # Get column type from schema
+            col_type = self.columns.get(col_name, "").upper()
+
+            if "TIMESTAMP" in col_type:
+                query = f"""
+                SELECT COUNT(DISTINCT {col_name}) as cardinality 
+                FROM {self.name}
+                WHERE {col_name} IS NOT NULL
+                """
+            elif "DECIMAL" in col_type:
+                query = f"""
+                SELECT COUNT(DISTINCT cast({col_name} as decimal(10,0))) as cardinality 
+                FROM {self.name}
+                """
+            else:
+                query = f"""
+                SELECT COUNT(DISTINCT {col_name}) as cardinality 
+                FROM {self.name}
+                """
+
             cursor.execute(query)
             result = cursor.fetchone()
             self.cardinalities[col_name] = result[0] if result else 0
+
+            print(
+                f"Computed cardinality for {col_name} ({col_type}): {self.cardinalities[col_name]}"
+            )
 
     def create(self, cursor: Cursor):
         """Create the table in Hive.

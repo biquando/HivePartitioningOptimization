@@ -1,7 +1,7 @@
 .PHONY: run clean small medium large users products orders order_items reviews
 
 # Default values
-DATA_SIZE=2
+DATA_SIZE=3
 ALGORITHM=1
 TABLES=
 
@@ -12,9 +12,14 @@ else
   TABLES_ARG=
 endif
 
+start:
+	./hive.sh
+	docker exec -it hive4 beeline -u 'jdbc:hive2://localhost:10000/'
+
+
 # Run the script with command-line arguments
 run:
-	python src/test.py --data_size=$(DATA_SIZE) --algorithm=$(ALGORITHM) $(TABLES_ARG)
+	python src/testbench.py --data_size=$(DATA_SIZE) --algorithm=$(ALGORITHM) $(TABLES_ARG)
 
 # Example shortcuts
 small:

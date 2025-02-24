@@ -12,3 +12,4 @@ thrift-sasl==0.4.3
 tqdm==4.67.1
 tzdata==2025.1
 urllib3==2.3.0
+numpy

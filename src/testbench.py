@@ -16,12 +16,24 @@ class Testbench:
     def __init__(self, data_size_MiB=2):
         self.conn = hive.Connection(host="localhost", port=10000)
         self.cursor = self.conn.cursor()
+
+        # Correct memory settings
+        self.cursor.execute("SET mapreduce.map.memory.mb=3072")
+        self.cursor.execute("SET mapreduce.reduce.memory.mb=3072")
+        self.cursor.execute("SET hive.map.aggr.hash.percentmemory=0.5")
+        self.cursor.execute("SET hive.exec.reducers.max=1000")
+        self.cursor.execute("SET hive.vectorized.execution.enabled=true")
+
+        # Parallel execution
+        self.cursor.execute("SET hive.exec.parallel=true")
+        self.cursor.execute("SET hive.exec.parallel.thread.number=8")
+
         self.MAX_PARTITION_PRODUCT = 1000
         self.cursor.execute(
-            f"SET hive.exec.max.dynamic.partitions={self.MAX_PARTITION_PRODUCT + 1}"
+            f"SET hive.exec.max.dynamic.partitions={self.MAX_PARTITION_PRODUCT + 5}"
         )
         self.cursor.execute(
-            f"SET hive.exec.max.dynamic.partitions.pernode={self.MAX_PARTITION_PRODUCT + 1}"
+            f"SET hive.exec.max.dynamic.partitions.pernode={self.MAX_PARTITION_PRODUCT + 5}"
         )
 
         # Load column frequency dictionary
@@ -95,7 +107,7 @@ def main():
         description="Run partitioning algorithms on tables."
     )
     parser.add_argument(
-        "--data_size", type=int, default=100, help="Size of the dataset in MiB"
+        "--data_size", type=int, default=2, help="Size of the dataset in MiB"
     )
     parser.add_argument(
         "--algorithm",
@@ -119,8 +131,8 @@ def main():
     tb = Testbench(data_size_MiB=args.data_size)
 
     # Run queries before repartitioning
-    exec_time_1 = tb.run()
-    print(f"Initial query execution time: {round(exec_time_1, 4)}s")
+    # exec_time_1 = tb.run()
+    # print(f"Initial query execution time: {round(exec_time_1, 4)}s")
 
     # Dictionary to store results for all tables
     all_results = {}
@@ -159,7 +171,7 @@ def main():
     metadata = {
         "data_size": args.data_size,
         "total_time": total_time,
-        "initial_query_time": exec_time_1,
+        # "initial_all_query_time": exec_time_1,
         "algorithm_version": args.algorithm,
         "num_tables_processed": len(tables_to_process),
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),

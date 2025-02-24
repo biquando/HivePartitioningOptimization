@@ -3,7 +3,7 @@
         ["user_id", "INT"],
         ["name", "STRING"],
         ["email", "STRING"],
-        ["created_at", "TIMESTAMP"]
+        ["created_at", "DATE"]
     ],
     "products": [
         ["product_id", "INT"],
@@ -15,7 +15,7 @@
     "orders": [
         ["order_id", "INT"],
         ["user_id", "INT"],
-        ["order_date", "TIMESTAMP"],
+        ["order_date", "DATE"],
         ["total_amount", "DECIMAL(10,2)"]
     ],
     "order_items": [

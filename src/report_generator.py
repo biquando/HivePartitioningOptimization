@@ -33,8 +33,11 @@ def write_consolidated_report(all_results, algorithm_name, metadata=None):
             file.write(
                 f"Total Execution Time: {metadata.get('total_time', 'N/A'):.2f} seconds\n"
             )
+
+        # Only write initial query time if it exists in metadata
+        if "initial_query_time" in metadata:
             file.write(
-                f"Initial Query Time: {metadata.get('initial_query_time', 'N/A'):.2f} seconds\n\n"
+                f"Initial Query Time: {metadata['initial_query_time']:.2f} seconds\n"
             )
 
         # Write summary statistics for each table

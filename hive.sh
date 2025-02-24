@@ -16,6 +16,9 @@ docker run -d \
   -p 10000:10000 \
   -p 10002:10002 \
   -v "$(pwd -P)/data:/data" \
+  --memory="4g" \
+  --cpus="4" \
   --env SERVICE_NAME=hiveserver2 \
+  --env HIVE_HEAP_MEMORY=3072 \
   --name hive4 \
   apache/hive:$HIVE_VERSION
