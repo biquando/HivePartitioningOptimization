@@ -1,0 +1,17 @@
+Detailed Results for products
+============================
+
+Algorithm: algorithm_1
+Data Size: 100 MiB
+Run Timestamp: 20250223_213650
+
+Partition Columns              Execution Time (s)   Cardinality Product       Time Difference (%)
+--------------------------------------------------------------------------------
+['category']                   8.3071               21                        -13.44
+[]                             9.5965               1                         0.0
+['price']                      10.8579              21                        13.14
+['category', 'price']          16.2535              441                       69.37
+['stock']                      16.5281              101                       72.23
+['category', 'stock']          inf                  2121                      None
+['price', 'stock']             inf                  2121                      None
+['category', 'price', 'stock'] inf                  44541                     None

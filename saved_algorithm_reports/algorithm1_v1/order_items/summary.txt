@@ -1,0 +1,17 @@
+Algorithm Run Summary
+===================
+
+Run Configuration:
+-----------------
+Algorithm: algorithm_1
+Data Size: 51 MiB
+Tables Processed: order_items
+Total Execution Time: 68.41 seconds
+Per-Table Summary:
+----------------
+
+order_items:
+  Baseline Time: 17.92 seconds
+  Best Time: 2.24 seconds
+  Best Partition: ['order_id', 'quantity']
+  Improvement: 87.50%

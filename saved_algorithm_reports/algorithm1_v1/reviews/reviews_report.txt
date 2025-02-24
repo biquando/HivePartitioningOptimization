@@ -1,0 +1,17 @@
+Detailed Results for reviews
+===========================
+
+Algorithm: algorithm_1
+Data Size: 50 MiB
+Run Timestamp: 20250223_211415
+
+Partition Columns              Execution Time (s)   Cardinality Product       Time Difference (%)
+--------------------------------------------------------------------------------
+['rating']                     4.4684               5                         -19.69
+['rating', 'comment']          4.8025               105                       -13.69
+['comment']                    4.8114               21                        -13.53
+[]                             5.564                1                         0.0
+['product_id']                 8.3878               61                        50.75
+['product_id', 'rating']       9.632                305                       73.11
+['product_id', 'comment']      inf                  1281                      None
+['product_id', 'rating', 'comment'] inf                  6405                      None

@@ -1,0 +1,17 @@
+Algorithm Run Summary
+===================
+
+Run Configuration:
+-----------------
+Algorithm: algorithm_1
+Data Size: 100 MiB
+Tables Processed: users
+Total Execution Time: 31.62 seconds
+Per-Table Summary:
+----------------
+
+users:
+  Baseline Time: 13.01 seconds
+  Best Time: 13.01 seconds
+  Best Partition: None
+  Improvement: 0.00%

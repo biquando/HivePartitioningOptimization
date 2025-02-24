@@ -1,0 +1,17 @@
+Detailed Results for order_items
+===============================
+
+Algorithm: algorithm_1
+Data Size: 51 MiB
+Run Timestamp: 20250223_202531
+
+Partition Columns              Execution Time (s)   Cardinality Product       Time Difference (%)
+--------------------------------------------------------------------------------
+['order_id', 'quantity']       2.2403               187                       -87.5
+['order_id']                   2.3509               17                        -86.88
+['quantity']                   15.4914              11                        -13.54
+[]                             17.9181              1                         0.0
+['product_id']                 inf                  51000                     None
+['product_id', 'order_id']     inf                  867000                    None
+['product_id', 'quantity']     inf                  561000                    None
+['product_id', 'order_id', 'quantity'] inf                  9537000                   None

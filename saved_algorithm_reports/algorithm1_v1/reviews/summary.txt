@@ -1,0 +1,17 @@
+Algorithm Run Summary
+===================
+
+Run Configuration:
+-----------------
+Algorithm: algorithm_1
+Data Size: 50 MiB
+Tables Processed: reviews
+Total Execution Time: 69.91 seconds
+Per-Table Summary:
+----------------
+
+reviews:
+  Baseline Time: 5.56 seconds
+  Best Time: 4.47 seconds
+  Best Partition: ['rating']
+  Improvement: 19.69%

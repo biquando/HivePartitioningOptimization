@@ -1,26 +1,34 @@
 {
-    "users": {
-        "created_at": 1
-    },
-    "products": {
-        "stock": 1,
-        "category": 3,
-        "product_id": 1,
-        "price": 3
-    },
-    "orders": {
-        "order_date": 6,
-        "user_id": 11,
-        "order_id": 1
-    },
-    "order_items": {
-        "product_id": 5,
-        "order_id": 2,
-        "quantity": 1
-    },
-    "reviews": {
-        "rating": 5,
-        "product_id": 6,
-        "comment": 4
-    }
+  "users": {
+    "name": 19,
+    "created_at": 12,
+    "email": 3,
+    "user_id": 0
+  },
+  "products": {
+    "category": 18,
+    "price": 15,
+    "stock": 3,
+    "product_id": 2,
+    "name": 0
+  },
+  "orders": {
+    "order_date": 20,
+    "user_id": 8,
+    "total_amount": 3,
+    "order_id": 0
+  },
+  "order_items": {
+    "order_id": 10,
+    "product_id": 2,
+    "price": 2,
+    "quantity": 0
+  },
+  "reviews": {
+    "rating": 20,
+    "comment": 13,
+    "product_id": 6,
+    "user_id": 5,
+    "review_id": 3
+  }
 }
