@@ -14,8 +14,9 @@ endif
 
 start:
 	./hive.sh
-	docker exec -it hive4 beeline -u 'jdbc:hive2://localhost:10000/'
 
+connect:
+	docker exec -it hive4 beeline -u 'jdbc:hive2://localhost:10000/'
 
 # Run the script with command-line arguments
 run:

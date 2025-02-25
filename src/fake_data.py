@@ -4,6 +4,7 @@ from datetime import datetime
 import random
 from faker import Faker
 from datetime import timedelta
+import os
 
 # For each table, there is guaranteed to be one column with
 # at most this cardinality
@@ -51,7 +52,6 @@ def generate_users(
     return users
 
 
-# Generate Products
 # Generate Products
 def generate_products(n=500):
     products = []
@@ -164,7 +164,13 @@ def generate_order_items(
     quantity_pool = list(range(1, quantity_cardinality + 1))
 
     # Create price pool based on available product prices
-    price_pool = [random.randint(1, 100) for _ in range(price_cardinality)]
+    price_pool = []
+    for i in range(price_cardinality):
+        # Calculate evenly distributed price points
+        price_value = 1.0 + (i * (99.0 / (price_cardinality - 1)))
+        # Round to 2 decimal places but keep as numeric value
+        rounded_price = round(price_value, 2)
+        price_pool.append(rounded_price)
 
     # Process each order
     for order in orders:
@@ -247,7 +253,10 @@ def generate_reviews(
     return reviews
 
 
-def generate_data(size_MiB=10):
+def generate_data(size_MiB=10, output_dir="data"):
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+
     # Generate Data
     print("Generating users...")
     users = generate_users(2000 * size_MiB)
@@ -271,28 +280,44 @@ def generate_data(size_MiB=10):
             writer.writerow(headers)
             writer.writerows(data)
 
-    save_to_csv("data/users.csv", users, ["user_id", "name", "email", "created_at"])
     save_to_csv(
-        "data/products.csv",
+        os.path.join(output_dir, "users.csv"),
+        users,
+        ["user_id", "name", "email", "created_at"],
+    )
+    save_to_csv(
+        os.path.join(output_dir, "products.csv"),
         products,
         ["product_id", "name", "category", "price", "stock"],
     )
     save_to_csv(
-        "data/orders.csv", orders, ["order_id", "user_id", "order_date", "total_amount"]
+        os.path.join(output_dir, "orders.csv"),
+        orders,
+        ["order_id", "user_id", "order_date", "total_amount"],
     )
     save_to_csv(
-        "data/order_items.csv",
+        os.path.join(output_dir, "order_items.csv"),
         order_items,
         ["order_id", "product_id", "quantity", "price"],
     )
     save_to_csv(
-        "data/reviews.csv",
+        os.path.join(output_dir, "reviews.csv"),
         reviews,
         ["review_id", "user_id", "product_id", "rating", "comment"],
     )
 
-    print("Data generation complete! CSV files are ready.")
+    print(f"Data generation complete! CSV files are saved to {output_dir}.")
 
 
 if __name__ == "__main__":
-    generate_data()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Generate fake data for Hive tables")
+    parser.add_argument("--size", type=int, default=10, help="Size of data in MiB")
+    parser.add_argument(
+        "--output", type=str, default="data", help="Output directory for CSV files"
+    )
+
+    args = parser.parse_args()
+
+    generate_data(args.size, args.output)

@@ -16,6 +16,7 @@ class Testbench:
     def __init__(self, data_size_MiB=2):
         self.conn = hive.Connection(host="localhost", port=10000)
         self.cursor = self.conn.cursor()
+        self.data_size_MiB = data_size_MiB
 
         # Correct memory settings
         # self.cursor.execute("SET mapreduce.map.memory.mb=3072")
@@ -47,34 +48,97 @@ class Testbench:
         with open(os.path.join(os.getcwd(), "src", "schema.json"), "r") as file:
             schemas = json.load(file)
 
-        # Create tables from schema
+        # Create tables from schema if they don't exist
         self.tables: dict[str, Table] = {}
         for table_name, schema in schemas.items():
             self.tables[table_name] = Table(table_name, schema)
-            self.cursor.execute(f"DROP TABLE {table_name}")
-            self.tables[table_name].create(self.cursor)
+
+            # Check if table exists
+            try:
+                self.cursor.execute(f"DESCRIBE {table_name}")
+                print(f"Table {table_name} already exists.")
+                # Table exists, we'll use it as is
+            except Exception as e:
+                print(f"Table {table_name} doesn't exist, creating it.")
+                self.tables[table_name].create(self.cursor)
+
+        # Set up data directory for this size
+        self.base_data_dir = os.path.join(os.getcwd(), "data")
+        self.size_data_dir = os.path.join(self.base_data_dir, str(data_size_MiB))
+        os.makedirs(self.size_data_dir, exist_ok=True)
+
+        # Track current loaded data with a marker file
+        self.current_data_marker = os.path.join(
+            self.base_data_dir, "current_loaded.txt"
+        )
 
         # Check if we need to generate new data
-        should_generate = not os.path.exists(
-            os.path.join(os.getcwd(), "data", "size.txt")
+        should_generate = (
+            not os.path.exists(self.size_data_dir)
+            or len(os.listdir(self.size_data_dir)) == 0
         )
-        if not should_generate:
-            with open(os.path.join(os.getcwd(), "data", "size.txt"), "r") as file:
-                prev_size = int(file.read())
-            if data_size_MiB != prev_size:
-                should_generate = True
 
+        # Check if this size data is already loaded in Hive
+        current_loaded_size = None
+        if os.path.exists(self.current_data_marker):
+            with open(self.current_data_marker, "r") as file:
+                current_loaded_size = file.read().strip()
+
+        needs_loading = str(data_size_MiB) != current_loaded_size
+
+        # Generate data if needed
         if should_generate:
-            with open(os.path.join(os.getcwd(), "data", "size.txt"), "w") as file:
-                file.write(str(data_size_MiB) + "\n")
-            print(f"Generating {data_size_MiB} MiB of fake data.")
-            fake_data.generate_data(data_size_MiB)
+            print(
+                f"Generating {data_size_MiB} MiB of fake data in {self.size_data_dir}"
+            )
+            fake_data.generate_data(data_size_MiB, output_dir=self.size_data_dir)
 
-        # Load data into tables
-        for table_name in self.tables:
-            print(f"Loading {table_name}...")
-            self.cursor.execute(
-                f"LOAD DATA LOCAL INPATH 'file:///data/{table_name}.csv' OVERWRITE INTO TABLE {table_name}"
+            # Since we generated new data, we need to load it
+            needs_loading = True
+
+        # Check if tables are empty (additional check)
+        if not needs_loading:
+            try:
+                self.cursor.execute("SELECT COUNT(*) FROM users")
+                result = self.cursor.fetchone()
+                if result[0] == 0:
+                    print("Tables appear to be empty. Will load data.")
+                    needs_loading = True
+                else:
+                    print(f"Table users contains {result[0]} rows.")
+            except Exception as e:
+                print(f"Error checking table data: {e}")
+                needs_loading = True
+
+        # Load data into tables if needed
+        if needs_loading:
+            # Setup for data loading
+            for table_name in self.tables:
+                source_path = os.path.join(self.size_data_dir, f"{table_name}.csv")
+
+                if not os.path.exists(source_path):
+                    print(f"Warning: CSV file not found: {source_path}")
+                    continue
+
+                print(f"Loading {table_name} from size {data_size_MiB} dataset...")
+
+                try:
+                    # Try loading directly from the size directory
+                    self.cursor.execute(
+                        f"LOAD DATA LOCAL INPATH 'file:///data/{data_size_MiB}/{table_name}.csv' OVERWRITE INTO TABLE {table_name}"
+                    )
+                    print(f"Successfully loaded {table_name} from size directory.")
+                except Exception as e:
+                    print(f"Error loading {table_name}: {e}")
+                    print(f"Could not load {table_name}. This table may be empty.")
+
+            # Update current loaded data marker
+            with open(self.current_data_marker, "w") as file:
+                file.write(str(data_size_MiB))
+            print(f"Data loading operations complete.")
+        else:
+            print(
+                f"Data size {data_size_MiB} MiB is already loaded in Hive, skipping loading step."
             )
 
         # Compute cardinalities
@@ -87,8 +151,6 @@ class Testbench:
             self.tables, self.cursor, self.column_freq_dict, self.MAX_PARTITION_PRODUCT
         )
 
-        print("Data successfully loaded into tables.")
-
     def run(self):
         """Run all queries and return execution time."""
         return self.query_runner.run()
@@ -99,7 +161,7 @@ class Testbench:
 
     def algorithm2(self, table_name):
         """Run algorithm 2 for the given table."""
-        return self.partition_manager.algorithm1(table_name, self.query_runner)
+        return self.partition_manager.algorithm2(table_name, self.query_runner)
 
 
 def main():
