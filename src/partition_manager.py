@@ -118,4 +118,45 @@ class PartitionManager:
         return sorted(query_execution_times, key=lambda x: x[1])
 
     def algorithm2(self, table_name, query_runner):
-        pass
+        if table_name not in self.tables:
+            raise ValueError(f"Table {table_name} not found")
+
+        remaining_cols = self.column_freq_dict.get(table_name, {})
+
+        partition_cols = []
+
+        query_execution_times = []
+
+        exec_time_no_partition = query_runner.run(
+            table_name
+        )  # Run without any repartitioning
+
+        query_execution_times.append(
+            ([], exec_time_no_partition, 1)
+        )  # No partition, product = 1 (or can be set as 0)
+
+        new_exec_time = exec_time_no_partition
+        old_exec_time = exec_time_no_partition + 1  # Initialize old_exec_time to be necessarily
+                                                    # bigger than new_exec_time.
+
+        while new_exec_time < old_exec_time:
+            old_exec_time = new_exec_time
+            best_col = None
+
+            for col in remaining_cols:
+                exec_time, cardinality_product = self.attempt_repartition_and_run(
+                    table_name, partition_cols + [col], query_runner
+                )
+
+                if exec_time < new_exec_time:
+                    best_col = col
+                    new_cardinality_product = cardinality_product
+                    new_exec_time = exec_time
+
+            if best_col is not None:
+                partition_cols.append(best_col)
+                query_execution_times.append((partition_cols.copy(), new_exec_time, new_cardinality_product))
+                remaining_cols.pop(best_col)
+        
+        print("DEBUG: At partition_mamanger: query_execution_times = ", query_execution_times)
+        return query_execution_times
