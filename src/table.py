@@ -89,8 +89,8 @@ class Table:
             query += "\n)"
 
         query += """
-ROW FORMAT DELIMITED
-FIELDS TERMINATED BY ','"""
+        ROW FORMAT DELIMITED
+        FIELDS TERMINATED BY ','"""
 
         cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
         cursor.execute(query)
