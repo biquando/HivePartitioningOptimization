@@ -53,14 +53,16 @@ class Testbench:
         for table_name, schema in schemas.items():
             self.tables[table_name] = Table(table_name, schema)
 
-            # Check if table exists
+            # Check if table exists and drop it if it does
             try:
-                self.cursor.execute(f"DESCRIBE {table_name}")
-                print(f"Table {table_name} already exists.")
-                # Table exists, we'll use it as is
+                self.cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
+                print(f"Table {table_name} dropped if it existed.")
             except Exception as e:
-                print(f"Table {table_name} doesn't exist, creating it.")
-                self.tables[table_name].create(self.cursor)
+                print(f"Error when trying to drop table {table_name}: {e}")
+
+            # Create the new table
+            print(f"Creating table {table_name}.")
+            self.tables[table_name].create(self.cursor)
 
         # Set up data directory for this size
         self.base_data_dir = os.path.join(os.getcwd(), "data")
