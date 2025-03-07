@@ -1,0 +1,16 @@
+Detailed Results for users
+=========================
+
+Algorithm: algorithm_2
+Data Size: 100 MiB
+Run Timestamp: 20250307_152104
+Total Algorithm Time: 380.66 seconds
+Column Groups Tested: 1
+
+Partition Columns              Execution Time (s)   Cardinality Product       Time Difference (%)
+--------------------------------------------------------------------------------
+[]                             18.4013              1                         0.0
+['name']                       inf                  39720                     None
+['created_at']                 inf                  18000                     None
+['email']                      inf                  11001                     None
+['user_id']                    inf                  49075                     None

@@ -1,0 +1,77 @@
+{
+  "table_name": "users",
+  "algorithm": "algorithm_1",
+  "data_size_MiB": 500,
+  "timestamp": "20250307_142158",
+  "total_algorithm_time": 340.9623177051544,
+  "column_groups_tested": 1,
+  "results": [
+    {
+      "partition_columns": [],
+      "execution_time_seconds": 26.8546,
+      "cardinality_product": 1,
+      "time_difference_percent": 0.0
+    },
+    {
+      "partition_columns": [
+        "name"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 40001,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "created_at"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 18000,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "email"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 11001,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "name",
+        "created_at"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 720018000,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "name",
+        "email"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 440051001,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "created_at",
+        "email"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 198018000,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "name",
+        "created_at",
+        "email"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 7920918018000,
+      "time_difference_percent": null
+    }
+  ]
+}

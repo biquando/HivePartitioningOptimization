@@ -1,0 +1,16 @@
+flowchart LR
+    user((User)) -->|make run DATA_SIZE=5\nALGORITHM=1\nTABLES=products| testbench
+    
+    testbench[testbench.py] -->|calls| data
+    testbench -->|calls| partition
+    testbench -->|calls| query
+    
+    data[fake_data.py] -->|generates data| hive
+    table[table.py] -->|executes Hive DDL code| hive
+    partition[partition_manager.py] -->|optimizes partitions| hive
+    query[query_runner.py] -->|runs queries| hive
+    
+    subgraph docker["Docker\nContainer"]
+        hive[(Hive DB)]
+        style hive width:100px,height:100px
+    end

@@ -1,0 +1,48 @@
+{
+  "table_name": "users",
+  "algorithm": "algorithm_2",
+  "data_size_MiB": 500,
+  "timestamp": "20250307_143121",
+  "total_algorithm_time": 457.4923939704895,
+  "column_groups_tested": 1,
+  "results": [
+    {
+      "partition_columns": [],
+      "execution_time_seconds": 28.4242,
+      "cardinality_product": 1,
+      "time_difference_percent": 0.0
+    },
+    {
+      "partition_columns": [
+        "name"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 40001,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "created_at"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 18000,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "email"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 11001,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "user_id"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 50000,
+      "time_difference_percent": null
+    }
+  ]
+}

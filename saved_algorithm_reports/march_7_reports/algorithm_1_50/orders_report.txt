@@ -1,0 +1,19 @@
+Detailed Results for orders
+==========================
+
+Algorithm: algorithm_1
+Data Size: 50 MiB
+Run Timestamp: 20250307_155503
+Total Algorithm Time: 142.72 seconds
+Column Groups Tested: 4
+
+Partition Columns              Execution Time (s)   Cardinality Product       Time Difference (%)
+--------------------------------------------------------------------------------
+['order_date']                 4.4211               41                        -70.17
+[]                             14.821               1                         0.0
+['total_amount']               17.3008              99                        16.73
+['user_id']                    18.4258              85                        24.32
+['order_date', 'user_id']      inf                  3485                      None
+['order_date', 'total_amount'] inf                  4059                      None
+['user_id', 'total_amount']    inf                  8415                      None
+['order_date', 'user_id', 'total_amount'] inf                  345015                    None

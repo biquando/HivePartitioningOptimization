@@ -1,0 +1,77 @@
+{
+  "table_name": "products",
+  "algorithm": "algorithm_1",
+  "data_size_MiB": 100,
+  "timestamp": "20250307_152926",
+  "total_algorithm_time": 262.77015686035156,
+  "column_groups_tested": 5,
+  "results": [
+    {
+      "partition_columns": [
+        "category"
+      ],
+      "execution_time_seconds": 7.3353,
+      "cardinality_product": 21,
+      "time_difference_percent": -7.68
+    },
+    {
+      "partition_columns": [],
+      "execution_time_seconds": 7.9452,
+      "cardinality_product": 1,
+      "time_difference_percent": 0.0
+    },
+    {
+      "partition_columns": [
+        "price"
+      ],
+      "execution_time_seconds": 8.3953,
+      "cardinality_product": 21,
+      "time_difference_percent": 5.67
+    },
+    {
+      "partition_columns": [
+        "category",
+        "price"
+      ],
+      "execution_time_seconds": 14.6588,
+      "cardinality_product": 441,
+      "time_difference_percent": 84.5
+    },
+    {
+      "partition_columns": [
+        "stock"
+      ],
+      "execution_time_seconds": 16.9216,
+      "cardinality_product": 101,
+      "time_difference_percent": 112.98
+    },
+    {
+      "partition_columns": [
+        "category",
+        "stock"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 2121,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "price",
+        "stock"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 2121,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "category",
+        "price",
+        "stock"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 44541,
+      "time_difference_percent": null
+    }
+  ]
+}
