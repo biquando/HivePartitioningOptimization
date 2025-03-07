@@ -118,45 +118,110 @@ class PartitionManager:
         return sorted(query_execution_times, key=lambda x: x[1])
 
     def algorithm2(self, table_name, query_runner):
+        """Implement Algorithm 2 for partition column selection using a greedy approach."""
         if table_name not in self.tables:
             raise ValueError(f"Table {table_name} not found")
 
-        remaining_cols = self.column_freq_dict.get(table_name, {})
-
-        partition_cols = []
-
+        table = self.tables[table_name]
         query_execution_times = []
+        best_columns = []
+        best_exec_time = float("inf")
 
+        # Get frequencies for this table
+        table_frequencies = self.column_freq_dict.get(table_name, {})
+
+        # Get all columns (without sorting by frequency)
+        all_columns = list(table_frequencies.keys())
+
+        # Test no partition (baseline case)
         exec_time_no_partition = query_runner.run(
             table_name
         )  # Run without any repartitioning
-
+        best_exec_time = exec_time_no_partition
         query_execution_times.append(
             ([], exec_time_no_partition, 1)
-        )  # No partition, product = 1 (or can be set as 0)
+        )  # No partition, product = 1
 
-        new_exec_time = exec_time_no_partition
-        old_exec_time = exec_time_no_partition + 1  # Initialize old_exec_time to be necessarily
-                                                    # bigger than new_exec_time.
+        # Iteratively add the best column
+        remaining_columns = all_columns.copy()
 
-        while new_exec_time < old_exec_time:
-            old_exec_time = new_exec_time
-            best_col = None
+        while remaining_columns:
+            iteration_best_col = None
+            iteration_best_time = float("inf")
+            iteration_best_product = 0
 
-            for col in remaining_cols:
+            # Try adding each remaining column to our best set
+            for col in remaining_columns:
+                candidate_columns = best_columns + [col]
                 exec_time, cardinality_product = self.attempt_repartition_and_run(
-                    table_name, partition_cols + [col], query_runner
+                    table_name, candidate_columns, query_runner
                 )
 
-                if exec_time < new_exec_time:
-                    best_col = col
-                    new_cardinality_product = cardinality_product
-                    new_exec_time = exec_time
+                # Record all tested combinations
+                query_execution_times.append(
+                    (candidate_columns, exec_time, cardinality_product)
+                )
 
-            if best_col is not None:
-                partition_cols.append(best_col)
-                query_execution_times.append((partition_cols.copy(), new_exec_time, new_cardinality_product))
-                remaining_cols.pop(best_col)
-        
-        print("DEBUG: At partition_mamanger: query_execution_times = ", query_execution_times)
-        return query_execution_times
+                # Track the best for this iteration
+                if exec_time < iteration_best_time:
+                    iteration_best_col = col
+                    iteration_best_time = exec_time
+                    iteration_best_product = cardinality_product
+
+            # If adding the best column makes performance worse, stop
+            if iteration_best_time >= best_exec_time:
+                break
+
+            # Otherwise, update our best configuration
+            best_columns.append(iteration_best_col)
+            best_exec_time = iteration_best_time
+
+            # Remove the column we just added from the remaining set
+            remaining_columns.remove(iteration_best_col)
+
+            # Return all tested combinations, sorted by execution time
+        return sorted(query_execution_times, key=lambda x: x[1])
+
+    # def algorithm2(self, table_name, query_runner):
+    #     if table_name not in self.tables:
+    #         raise ValueError(f"Table {table_name} not found")
+
+    #     remaining_cols = self.column_freq_dict.get(table_name, {})
+
+    #     partition_cols = []
+
+    #     query_execution_times = []
+
+    #     exec_time_no_partition = query_runner.run(
+    #         table_name
+    #     )  # Run without any repartitioning
+
+    #     query_execution_times.append(
+    #         ([], exec_time_no_partition, 1)
+    #     )  # No partition, product = 1 (or can be set as 0)
+
+    #     new_exec_time = exec_time_no_partition
+    #     old_exec_time = exec_time_no_partition + 1  # Initialize old_exec_time to be necessarily
+    #                                                 # bigger than new_exec_time.
+
+    #     while new_exec_time < old_exec_time:
+    #         old_exec_time = new_exec_time
+    #         best_col = None
+
+    #         for col in remaining_cols:
+    #             exec_time, cardinality_product = self.attempt_repartition_and_run(
+    #                 table_name, partition_cols + [col], query_runner
+    #             )
+
+    #             if exec_time < new_exec_time:
+    #                 best_col = col
+    #                 new_cardinality_product = cardinality_product
+    #                 new_exec_time = exec_time
+
+    #         if best_col is not None:
+    #             partition_cols.append(best_col)
+    #             query_execution_times.append((partition_cols.copy(), new_exec_time, new_cardinality_product))
+    #             remaining_cols.pop(best_col)
+
+    #     print("DEBUG: At partition_mamanger: query_execution_times = ", query_execution_times)
+    #     return query_execution_times
