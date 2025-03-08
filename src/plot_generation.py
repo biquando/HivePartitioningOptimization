@@ -84,42 +84,135 @@ def load_data_from_directories(base_path="saved_algorithm_reports/march_7_report
 
 def plot_best_speedup_by_size(data_dict):
     """
-    Plot 1: Graph comparing the average percent speedup of the best table for multiple data sizes
+    Plot 1: Graph comparing the average percent speedup of the best table for multiple data sizes,
+    with comparison between algorithm 1 and algorithm 2
     """
     sizes = sorted(data_dict.keys())
-    best_speedups = []
+    best_speedups_alg1 = []
+    best_speedups_alg2 = []
+
+    print(f"Plotting best speedup by size with {len(sizes)} size points: {sizes}")
 
     for size in sizes:
-        if 1 in data_dict[size]:  # Assuming algorithm 1 data
+        # Process Algorithm 1 data
+        if 1 in data_dict[size]:
             df = data_dict[size][1]
+            print(
+                f"  Size {size} MiB (Alg 1): Found {len(df)} data points across {len(df['table_name'].unique())} tables"
+            )
 
             # Group by table and find best speedup for each table
             best_by_table = (
                 df.groupby("table_name")["time_difference_percent"].min().reset_index()
             )
+            print(
+                f"  Best speedups per table (Alg 1): {dict(zip(best_by_table['table_name'], best_by_table['time_difference_percent']))}"
+            )
 
             # Calculate average of best speedups across all tables
             avg_best_speedup = best_by_table["time_difference_percent"].mean()
-            best_speedups.append(
+            best_speedups_alg1.append(
                 abs(avg_best_speedup)
             )  # Convert to positive for visualization
+            print(
+                f"  Average best speedup (Alg 1): {avg_best_speedup} → {abs(avg_best_speedup)}%"
+            )
+        else:
+            best_speedups_alg1.append(0)  # No data for this size
+            print(f"  Size {size} MiB (Alg 1): No data available")
+
+        # Process Algorithm 2 data
+        if 2 in data_dict[size]:
+            df = data_dict[size][2]
+            print(
+                f"  Size {size} MiB (Alg 2): Found {len(df)} data points across {len(df['table_name'].unique())} tables"
+            )
+
+            # Group by table and find best speedup for each table
+            best_by_table = (
+                df.groupby("table_name")["time_difference_percent"].min().reset_index()
+            )
+            print(
+                f"  Best speedups per table (Alg 2): {dict(zip(best_by_table['table_name'], best_by_table['time_difference_percent']))}"
+            )
+
+            # Calculate average of best speedups across all tables
+            avg_best_speedup = best_by_table["time_difference_percent"].mean()
+            best_speedups_alg2.append(
+                abs(avg_best_speedup)
+            )  # Convert to positive for visualization
+            print(
+                f"  Average best speedup (Alg 2): {avg_best_speedup} → {abs(avg_best_speedup)}%"
+            )
+        else:
+            best_speedups_alg2.append(0)  # No data for this size
+            print(f"  Size {size} MiB (Alg 2): No data available")
 
     # Create the plot
-    plt.figure(figsize=(10, 6))
-    plt.bar(range(len(sizes)), best_speedups, color="skyblue")
-    plt.xticks(range(len(sizes)), [f"{s} MiB" for s in sizes])
-    plt.ylabel("Average Best Speedup (%)")
-    plt.xlabel("Data Size")
-    plt.title("Average Best Speedup Across Tables by Data Size")
-    plt.grid(axis="y", linestyle="--", alpha=0.7)
+    plt.figure(figsize=(12, 6))
 
-    # Add value labels on top of bars
-    for i, v in enumerate(best_speedups):
-        plt.text(i, v + 1, f"{v:.2f}%", ha="center")
+    if any(best_speedups_alg1) or any(best_speedups_alg2):
+        # Set up bar positions
+        x = np.arange(len(sizes))
+        width = 0.35
+
+        # Create bars for both algorithms
+        bars1 = plt.bar(
+            x - width / 2,
+            best_speedups_alg1,
+            width,
+            label="Algorithm 1",
+            color="#3498db",
+        )
+        bars2 = plt.bar(
+            x + width / 2,
+            best_speedups_alg2,
+            width,
+            label="Algorithm 2",
+            color="#e74c3c",
+        )
+
+        plt.xticks(x, [f"{s} MiB" for s in sizes])
+        plt.ylabel("Average Best Speedup (%)")
+        plt.xlabel("Data Size")
+        plt.title(
+            "Comparison of Average Best Speedup Across Tables by Data Size and Algorithm"
+        )
+        plt.grid(axis="y", linestyle="--", alpha=0.7)
+        plt.legend()
+
+        # Add value labels on top of bars
+        for i, v in enumerate(best_speedups_alg1):
+            if v > 0:  # Only add label if there's a value
+                plt.text(i - width / 2, v + 0.5, f"{v:.2f}%", ha="center", fontsize=9)
+
+        for i, v in enumerate(best_speedups_alg2):
+            if v > 0:  # Only add label if there's a value
+                plt.text(i + width / 2, v + 0.5, f"{v:.2f}%", ha="center", fontsize=9)
+    else:
+        plt.text(
+            0.5,
+            0.5,
+            "No valid data found for plotting",
+            ha="center",
+            va="center",
+            fontsize=12,
+            transform=plt.gca().transAxes,
+        )
+        plt.title("Data Error: Average Best Speedup Across Tables by Data Size")
 
     plt.tight_layout()
-    plt.savefig(f"plots/best_speedup_by_size_{size}.png", dpi=300, bbox_inches="tight")
+    save_path = "plots/best_speedup_by_size.png"
+    plt.savefig(save_path, dpi=300, bbox_inches="tight")
     plt.close()
+
+    # Check if file was created
+    if os.path.exists(save_path):
+        print(f"  Plot saved to {save_path} ({os.path.getsize(save_path)/1024:.1f} KB)")
+    else:
+        print(f"  ERROR: Failed to save plot to {save_path}")
+
+    return {"algorithm1": best_speedups_alg1, "algorithm2": best_speedups_alg2}
 
 
 def plot_products_column_speedup(data_dict, size=25):
