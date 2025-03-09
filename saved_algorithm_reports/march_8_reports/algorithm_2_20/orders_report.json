@@ -1,0 +1,95 @@
+{
+  "table_name": "orders",
+  "algorithm": "algorithm_2",
+  "data_size_MiB": 500,
+  "timestamp": "20250307_143121",
+  "total_algorithm_time": 457.4923939704895,
+  "column_groups_tested": 6,
+  "results": [
+    {
+      "partition_columns": [
+        "order_date",
+        "order_id"
+      ],
+      "execution_time_seconds": 4.5511,
+      "cardinality_product": 697,
+      "time_difference_percent": -89.98
+    },
+    {
+      "partition_columns": [
+        "order_date"
+      ],
+      "execution_time_seconds": 4.5598,
+      "cardinality_product": 41,
+      "time_difference_percent": -89.96
+    },
+    {
+      "partition_columns": [
+        "order_id"
+      ],
+      "execution_time_seconds": 43.5297,
+      "cardinality_product": 17,
+      "time_difference_percent": -4.13
+    },
+    {
+      "partition_columns": [],
+      "execution_time_seconds": 45.4067,
+      "cardinality_product": 1,
+      "time_difference_percent": 0.0
+    },
+    {
+      "partition_columns": [
+        "total_amount"
+      ],
+      "execution_time_seconds": 46.1175,
+      "cardinality_product": 99,
+      "time_difference_percent": 1.57
+    },
+    {
+      "partition_columns": [
+        "user_id"
+      ],
+      "execution_time_seconds": 48.2202,
+      "cardinality_product": 85,
+      "time_difference_percent": 6.2
+    },
+    {
+      "partition_columns": [
+        "order_date",
+        "user_id"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 3485,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "order_date",
+        "total_amount"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 4059,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "order_date",
+        "order_id",
+        "user_id"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 59245,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "order_date",
+        "order_id",
+        "total_amount"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 69003,
+      "time_difference_percent": null
+    }
+  ]
+}

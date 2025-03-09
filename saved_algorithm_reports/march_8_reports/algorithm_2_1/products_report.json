@@ -1,0 +1,92 @@
+{
+  "table_name": "products",
+  "algorithm": "algorithm_2",
+  "data_size_MiB": 25,
+  "timestamp": "20250307_154616",
+  "total_algorithm_time": 219.08058285713196,
+  "column_groups_tested": 6,
+  "results": [
+    {
+      "partition_columns": [
+        "category"
+      ],
+      "execution_time_seconds": 4.7188,
+      "cardinality_product": 21,
+      "time_difference_percent": -12.11
+    },
+    {
+      "partition_columns": [
+        "price"
+      ],
+      "execution_time_seconds": 5.265,
+      "cardinality_product": 21,
+      "time_difference_percent": -1.94
+    },
+    {
+      "partition_columns": [],
+      "execution_time_seconds": 5.3692,
+      "cardinality_product": 1,
+      "time_difference_percent": 0.0
+    },
+    {
+      "partition_columns": [
+        "category",
+        "price"
+      ],
+      "execution_time_seconds": 7.318,
+      "cardinality_product": 441,
+      "time_difference_percent": 36.3
+    },
+    {
+      "partition_columns": [
+        "stock"
+      ],
+      "execution_time_seconds": 10.1531,
+      "cardinality_product": 101,
+      "time_difference_percent": 89.1
+    },
+    {
+      "partition_columns": [
+        "name"
+      ],
+      "execution_time_seconds": 60.8461,
+      "cardinality_product": 972,
+      "time_difference_percent": 1033.25
+    },
+    {
+      "partition_columns": [
+        "product_id"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 25000,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "category",
+        "stock"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 2121,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "category",
+        "product_id"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 525000,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "category",
+        "name"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 20412,
+      "time_difference_percent": null
+    }
+  ]
+}

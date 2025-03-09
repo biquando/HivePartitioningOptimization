@@ -1,0 +1,21 @@
+Detailed Results for products
+============================
+
+Algorithm: algorithm_2
+Data Size: 25 MiB
+Run Timestamp: 20250307_154616
+Total Algorithm Time: 219.08 seconds
+Column Groups Tested: 6
+
+Partition Columns              Execution Time (s)   Cardinality Product       Time Difference (%)
+--------------------------------------------------------------------------------
+['category']                   4.7188               21                        -12.11
+['price']                      5.265                21                        -1.94
+[]                             5.3692               1                         0.0
+['category', 'price']          7.318                441                       36.3
+['stock']                      10.1531              101                       89.1
+['name']                       60.8461              972                       1033.25
+['product_id']                 inf                  25000                     None
+['category', 'stock']          inf                  2121                      None
+['category', 'product_id']     inf                  525000                    None
+['category', 'name']           inf                  20412                     None

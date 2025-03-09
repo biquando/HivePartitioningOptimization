@@ -1,0 +1,75 @@
+{
+  "table_name": "orders",
+  "algorithm": "algorithm_2",
+  "data_size_MiB": 50,
+  "timestamp": "20250307_155150",
+  "total_algorithm_time": 249.12858486175537,
+  "column_groups_tested": 6,
+  "results": [
+    {
+      "partition_columns": [
+        "order_date"
+      ],
+      "execution_time_seconds": 4.2053,
+      "cardinality_product": 41,
+      "time_difference_percent": -70.53
+    },
+    {
+      "partition_columns": [
+        "order_date",
+        "order_id"
+      ],
+      "execution_time_seconds": 6.806,
+      "cardinality_product": 697,
+      "time_difference_percent": -52.3
+    },
+    {
+      "partition_columns": [],
+      "execution_time_seconds": 14.2687,
+      "cardinality_product": 1,
+      "time_difference_percent": 0.0
+    },
+    {
+      "partition_columns": [
+        "total_amount"
+      ],
+      "execution_time_seconds": 21.5519,
+      "cardinality_product": 99,
+      "time_difference_percent": 51.04
+    },
+    {
+      "partition_columns": [
+        "order_id"
+      ],
+      "execution_time_seconds": 21.993,
+      "cardinality_product": 17,
+      "time_difference_percent": 54.14
+    },
+    {
+      "partition_columns": [
+        "user_id"
+      ],
+      "execution_time_seconds": 23.6155,
+      "cardinality_product": 85,
+      "time_difference_percent": 65.51
+    },
+    {
+      "partition_columns": [
+        "order_date",
+        "user_id"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 3485,
+      "time_difference_percent": null
+    },
+    {
+      "partition_columns": [
+        "order_date",
+        "total_amount"
+      ],
+      "execution_time_seconds": "inf",
+      "cardinality_product": 4059,
+      "time_difference_percent": null
+    }
+  ]
+}

@@ -4,13 +4,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from pathlib import Path
 
-sizes = [25, 50, 100, 500]
+
+sizes = [1, 2, 4, 20]
 algorithms = [1, 2]
 
 
-def load_data_from_directories(base_path="saved_algorithm_reports/march_7_reports"):
+def load_data_from_directories(
+    base_path="saved_algorithm_reports/march_8_reports",
+):
     """
     Load data from directories structured as <size>_algorithm<num>
 
@@ -98,7 +100,7 @@ def plot_best_speedup_by_size(data_dict):
         if 1 in data_dict[size]:
             df = data_dict[size][1]
             print(
-                f"  Size {size} MiB (Alg 1): Found {len(df)} data points across {len(df['table_name'].unique())} tables"
+                f"  Size {size} GB (Alg 1): Found {len(df)} data points across {len(df['table_name'].unique())} tables"
             )
 
             # Group by table and find best speedup for each table
@@ -112,20 +114,20 @@ def plot_best_speedup_by_size(data_dict):
             # Calculate average of best speedups across all tables
             avg_best_speedup = best_by_table["time_difference_percent"].mean()
             best_speedups_alg1.append(
-                abs(avg_best_speedup)
-            )  # Convert to positive for visualization
+                -1 * avg_best_speedup
+            )  # Convert negative percentages to positive speedup values
             print(
                 f"  Average best speedup (Alg 1): {avg_best_speedup} → {abs(avg_best_speedup)}%"
             )
         else:
             best_speedups_alg1.append(0)  # No data for this size
-            print(f"  Size {size} MiB (Alg 1): No data available")
+            print(f"  Size {size} GB (Alg 1): No data available")
 
         # Process Algorithm 2 data
         if 2 in data_dict[size]:
             df = data_dict[size][2]
             print(
-                f"  Size {size} MiB (Alg 2): Found {len(df)} data points across {len(df['table_name'].unique())} tables"
+                f"  Size {size} GB (Alg 2): Found {len(df)} data points across {len(df['table_name'].unique())} tables"
             )
 
             # Group by table and find best speedup for each table
@@ -139,14 +141,14 @@ def plot_best_speedup_by_size(data_dict):
             # Calculate average of best speedups across all tables
             avg_best_speedup = best_by_table["time_difference_percent"].mean()
             best_speedups_alg2.append(
-                abs(avg_best_speedup)
-            )  # Convert to positive for visualization
+                -1 * avg_best_speedup
+            )  # Convert negative percentages to positive speedup values
             print(
                 f"  Average best speedup (Alg 2): {avg_best_speedup} → {abs(avg_best_speedup)}%"
             )
         else:
             best_speedups_alg2.append(0)  # No data for this size
-            print(f"  Size {size} MiB (Alg 2): No data available")
+            print(f"  Size {size} GB (Alg 2): No data available")
 
     # Create the plot
     plt.figure(figsize=(12, 6))
@@ -172,7 +174,7 @@ def plot_best_speedup_by_size(data_dict):
             color="#e74c3c",
         )
 
-        plt.xticks(x, [f"{s} MiB" for s in sizes])
+        plt.xticks(x, [f"{s} GB" for s in sizes])
         plt.ylabel("Average Best Speedup (%)")
         plt.xlabel("Data Size")
         plt.title(
@@ -215,12 +217,145 @@ def plot_best_speedup_by_size(data_dict):
     return {"algorithm1": best_speedups_alg1, "algorithm2": best_speedups_alg2}
 
 
-def plot_products_column_speedup(data_dict, size=25):
+def plot_execution_time_by_size(data_dict):
+    """
+    Compare absolute execution times (not speedup) for algorithm 1 and 2
+    across different data sizes
+    """
+    sizes = sorted(data_dict.keys())
+    exec_times_alg1 = []
+    exec_times_alg2 = []
+
+    print(f"Plotting execution time by size with {len(sizes)} size points: {sizes}")
+
+    for size in sizes:
+        # Process Algorithm 1 data
+        if 1 in data_dict[size]:
+            df = data_dict[size][1]
+            # Find the baseline (no partitioning) execution time for each table
+            baseline_times = df[df["partition_columns"] == "None"]["execution_time"]
+            if not baseline_times.empty:
+                avg_time = baseline_times.mean()
+                exec_times_alg1.append(avg_time)
+                print(
+                    f"  Size {size} GB (Alg 1): Average execution time = {avg_time:.2f}s"
+                )
+            else:
+                # Use average of all execution times if no baseline found
+                avg_time = df["execution_time"].mean()
+                exec_times_alg1.append(avg_time)
+                print(
+                    f"  Size {size} GB (Alg 1): No baseline found, using average time = {avg_time:.2f}s"
+                )
+        else:
+            exec_times_alg1.append(0)  # No data for this size
+            print(f"  Size {size} GB (Alg 1): No data available")
+
+        # Process Algorithm 2 data
+        if 2 in data_dict[size]:
+            df = data_dict[size][2]
+            # Find the baseline (no partitioning) execution time for each table
+            baseline_times = df[df["partition_columns"] == "None"]["execution_time"]
+            if not baseline_times.empty:
+                avg_time = baseline_times.mean()
+                exec_times_alg2.append(avg_time)
+                print(
+                    f"  Size {size} GB (Alg 2): Average execution time = {avg_time:.2f}s"
+                )
+            else:
+                # Use average of all execution times if no baseline found
+                avg_time = df["execution_time"].mean()
+                exec_times_alg2.append(avg_time)
+                print(
+                    f"  Size {size} GB (Alg 2): No baseline found, using average time = {avg_time:.2f}s"
+                )
+        else:
+            exec_times_alg2.append(0)  # No data for this size
+            print(f"  Size {size} GB (Alg 2): No data available")
+
+    # Create the plot
+    plt.figure(figsize=(12, 6))
+
+    if any(exec_times_alg1) or any(exec_times_alg2):
+        # Plot line chart
+        plt.plot(
+            sizes,
+            exec_times_alg1,
+            "o-",
+            label="Algorithm 1",
+            color="#3498db",
+            linewidth=2,
+            markersize=8,
+        )
+        plt.plot(
+            sizes,
+            exec_times_alg2,
+            "s-",
+            label="Algorithm 2",
+            color="#e74c3c",
+            linewidth=2,
+            markersize=8,
+        )
+
+        plt.xticks(sizes, [f"{s} GB" for s in sizes])
+        plt.ylabel("Execution Time (seconds)")
+        plt.xlabel("Data Size")
+        plt.title("Comparison of Execution Times Across Data Sizes")
+        plt.grid(True, linestyle="--", alpha=0.7)
+        plt.legend()
+
+        # Add value labels near points
+        for i, (v1, v2) in enumerate(zip(exec_times_alg1, exec_times_alg2)):
+            if v1 > 0:
+                plt.text(
+                    sizes[i],
+                    v1 + 0.05 * max(exec_times_alg1),
+                    f"{v1:.2f}s",
+                    ha="center",
+                    va="bottom",
+                    fontsize=9,
+                )
+            if v2 > 0:
+                plt.text(
+                    sizes[i],
+                    v2 - 0.05 * max(exec_times_alg2),
+                    f"{v2:.2f}s",
+                    ha="center",
+                    va="top",
+                    fontsize=9,
+                )
+    else:
+        plt.text(
+            0.5,
+            0.5,
+            "No valid data found for plotting",
+            ha="center",
+            va="center",
+            fontsize=12,
+            transform=plt.gca().transAxes,
+        )
+        plt.title("Data Error: Execution Times Across Data Sizes")
+
+    plt.tight_layout()
+    save_path = "plots/execution_time_by_size.png"
+    plt.savefig(save_path, dpi=300, bbox_inches="tight")
+    plt.close()
+
+    # Check if file was created
+    if os.path.exists(save_path):
+        print(f"  Plot saved to {save_path} ({os.path.getsize(save_path)/1024:.1f} KB)")
+    else:
+        print(f"  ERROR: Failed to save plot to {save_path}")
+
+    return {"algorithm1": exec_times_alg1, "algorithm2": exec_times_alg2}
+
+
+def plot_products_column_speedup(data_dict, size=1):
     """
     Plot 2: Bar chart of percentage speedup for each combination of columns for products table
     """
     if size not in data_dict or 1 not in data_dict[size]:
-        print(f"No data found for size {size} MiB and algorithm 1")
+        print(f"No data found for size {size} GB and algorithm 1")
         return
 
     df = data_dict[size][1]
@@ -248,35 +383,31 @@ def plot_products_column_speedup(data_dict, size=25):
     # Create the plot
     plt.figure(figsize=(12, 7))
 
-    # Use absolute values for better visualization
-    abs_speedup = products_df["time_difference_percent"].abs()
-    colors = plt.cm.viridis(np.linspace(0.2, 0.8, len(products_df)))
-
-    bars = plt.bar(range(len(products_df)), abs_speedup, color=colors)
+    # Use the original time difference percentages
+    plt.bar(range(len(products_df)), products_df["time_difference_percent"])
     plt.xticks(
         range(len(products_df)),
         products_df["partition_columns"],
         rotation=45,
         ha="right",
     )
-    plt.ylabel(
-        "Speedup (%)"
-        if all(products_df["time_difference_percent"] < 0)
-        else "Time Difference (%)"
-    )
+    plt.ylabel("Time Difference (%)")
     plt.xlabel("Column Combinations")
-    plt.title("Performance Impact of Different Column Combinations for Products Table")
+    plt.title(
+        f"Performance Impact of Different Column Combinations for Products Table ({size} GB)"
+    )
     plt.grid(axis="y", linestyle="--", alpha=0.7)
 
     # Add value labels on top of bars
-    for bar, value in zip(bars, products_df["time_difference_percent"]):
-        label = f"{abs(value):.2f}%" if value < 0 else f"+{value:.2f}%"
+    for i, value in enumerate(products_df["time_difference_percent"]):
+        label = f"{value:.2f}%"
+        y_pos = value - 2 if value < 0 else value + 1
         plt.text(
-            bar.get_x() + bar.get_width() / 2,
-            bar.get_height() + 1,
+            i,
+            y_pos,
             label,
             ha="center",
-            va="bottom",
+            va="bottom" if value >= 0 else "top",
             fontsize=9,
         )
 
@@ -287,12 +418,12 @@ def plot_products_column_speedup(data_dict, size=25):
     plt.close()
 
 
-def plot_algorithm_comparison(data_dict, size=25):
+def plot_algorithm_comparison(data_dict, size=1):
     """
     Plot 3: Bar chart comparing speeds of algorithm 1 vs 2 for same tables
     """
     if size not in data_dict or 1 not in data_dict[size] or 2 not in data_dict[size]:
-        print(f"Missing data for size {size} MiB - need both algorithm 1 and 2")
+        print(f"Missing data for size {size} GB - need both algorithm 1 and 2")
         return
 
     df1 = data_dict[size][1]
@@ -320,8 +451,8 @@ def plot_algorithm_comparison(data_dict, size=25):
         comparison_data.append(
             {
                 "table": table,
-                "algorithm1_best": abs(best_speedup1),
-                "algorithm2_best": abs(best_speedup2),
+                "algorithm1_best": -1 * best_speedup1,
+                "algorithm2_best": -1 * best_speedup2,
             }
         )
 
@@ -351,7 +482,7 @@ def plot_algorithm_comparison(data_dict, size=25):
 
     plt.xlabel("Table")
     plt.ylabel("Best Speedup (%)")
-    plt.title(f"Comparison of Best Speedup: Algorithm 1 vs Algorithm 2 ({size} MiB)")
+    plt.title(f"Comparison of Best Speedup: Algorithm 1 vs Algorithm 2 ({size} GB)")
     plt.xticks(x, comparison_df["table"])
     plt.legend()
     plt.grid(axis="y", linestyle="--", alpha=0.7)
@@ -372,12 +503,110 @@ def plot_algorithm_comparison(data_dict, size=25):
     plt.close()
 
 
-def create_speedup_heatmap(data_dict, size=25, algorithm=1):
+def plot_speedup_vs_cardinality(data_dict, table_name="orders", size=1, algorithm=1):
+    """
+    Scatter plot showing the relationship between cardinality product and
+    speedup for different column combinations in a specific table
+    """
+    if size not in data_dict or algorithm not in data_dict[size]:
+        print(f"No data found for size {size} GB and algorithm {algorithm}")
+        return
+
+    df = data_dict[size][algorithm]
+    table_df = df[df["table_name"] == table_name].copy()
+
+    if table_df.empty:
+        print(f"No data found for '{table_name}' table")
+        return
+
+    # Filter to include only combinations with valid execution times
+    table_df = table_df[table_df["execution_time"] != float("inf")]
+
+    if len(table_df) < 2:  # Need at least baseline and one other point
+        print(f"Not enough data points for {table_name} table")
+        return
+
+    # Create the plot
+    plt.figure(figsize=(12, 8))
+
+    # Create scatter plot with point sizes based on column count
+    scatter = plt.scatter(
+        table_df["cardinality_product"],
+        -1 * table_df["time_difference_percent"],
+        c=table_df["column_count"],
+        s=100 + 50 * table_df["column_count"],  # Size based on number of columns
+        cmap="viridis",
+        alpha=0.7,
+        edgecolors="black",
+    )
+
+    # Add labels for each point
+    for i, row in table_df.iterrows():
+        plt.annotate(
+            row["partition_columns"],
+            (row["cardinality_product"], -1 * row["time_difference_percent"]),
+            xytext=(5, 5),
+            textcoords="offset points",
+            fontsize=8,
+            bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.7),
+        )
+
+    plt.xscale(
+        "log"
+    )  # Log scale for cardinality which can span many orders of magnitude
+    plt.xlabel("Cardinality Product (log scale)")
+    plt.ylabel("Speedup (%)")
+    plt.title(f"Speedup vs. Cardinality for {table_name} Table ({size} GB)")
+    plt.grid(True, linestyle="--", alpha=0.6)
+
+    # Add a color bar to show column count
+    cbar = plt.colorbar(scatter)
+    cbar.set_label("Number of Partition Columns")
+
+    # Add a trend line if enough points
+    if len(table_df) >= 3:
+        try:
+            # Remove zero cardinality for log calculation
+            trend_df = table_df[table_df["cardinality_product"] > 0].copy()
+            if len(trend_df) >= 3:
+                x = np.log10(trend_df["cardinality_product"])
+                y = -1 * trend_df["time_difference_percent"]
+                z = np.polyfit(x, y, 1)
+                p = np.poly1d(z)
+
+                # Generate x values for the trendline
+                x_line = np.linspace(
+                    np.log10(trend_df["cardinality_product"].min()),
+                    np.log10(trend_df["cardinality_product"].max()),
+                    100,
+                )
+
+                # Plot the trendline
+                plt.plot(
+                    10**x_line,
+                    p(x_line),
+                    "r--",
+                    linewidth=2,
+                    label=f"Trend: y = {z[0]:.2f}*log10(x) + {z[1]:.2f}",
+                )
+                plt.legend()
+        except Exception as e:
+            print(f"Could not calculate trend line: {e}")
+
+    plt.tight_layout()
+    save_path = f"plots/speedup_vs_cardinality_{table_name}_{size}gb.png"
+    plt.savefig(save_path, dpi=300, bbox_inches="tight")
+    plt.close()
+
+    print(f"✓ Generated speedup vs cardinality plot for {table_name}")
+
+
+def create_speedup_heatmap(data_dict, size=1, algorithm=1):
     """
     Additional Plot: Heatmap visualization of speedup across tables and partition strategies
     """
     if size not in data_dict or algorithm not in data_dict[size]:
-        print(f"No data found for size {size} MiB and algorithm {algorithm}")
+        print(f"No data found for size {size} GB and algorithm {algorithm}")
         return
 
     df = data_dict[size][algorithm]
@@ -404,11 +633,11 @@ def create_speedup_heatmap(data_dict, size=25, algorithm=1):
         pivot_df, annot=True, cmap="RdYlGn_r", center=0, fmt=".1f", linewidths=0.5
     )
     plt.title(
-        f"Speedup Heatmap by Table and Partition Columns ({size} MiB, Algorithm {algorithm})"
+        f"Speedup Heatmap by Table and Partition Columns ({size} GB, Algorithm {algorithm})"
     )
     plt.tight_layout()
     plt.savefig(
-        f"plots/speedup_heatmap_{size}mb_alg{algorithm}.png",
+        f"plots/speedup_heatmap_{size}gb_alg{algorithm}.png",
         dpi=300,
         bbox_inches="tight",
     )
@@ -429,28 +658,40 @@ def main():
 
     print(f"Found data for sizes: {list(data_dict.keys())}")
 
-    # Generate the requested plots
+    # Generate the plots
     print("Generating plots...")
 
     # Plot 1: Best speedup by size
     plot_best_speedup_by_size(data_dict)
     print("✓ Generated best speedup by size chart")
 
-    # Plot 2: Products column speedup
+    # Plot 2: Execution time by size (not speedup)
+    plot_execution_time_by_size(data_dict)
+    print("✓ Generated execution time by size chart")
+
+    # Plot 3: Products column speedup
     for size in sizes:
         plot_products_column_speedup(data_dict, size=size)
-        print("✓ Generated products column speedup chart")
+    print("✓ Generated products column speedup charts")
 
-    # Plot 3: Algorithm comparison
+    # Plot 4: Algorithm comparison
     for size in sizes:
         plot_algorithm_comparison(data_dict, size=size)
-        print("✓ Generated algorithm comparison chart")
+    print("✓ Generated algorithm comparison charts")
+
+    # Plot 5:  Speedup vs cardinality for orders
+    for size in sizes:
+        for algorithm in algorithms:
+            plot_speedup_vs_cardinality(
+                data_dict, table_name="orders", size=size, algorithm=algorithm
+            )
+    print("✓ Generated speedup vs cardinality charts")
 
     # Additional visualization: Speedup heatmap
     for size in sizes:
         for algorithm in algorithms:
             create_speedup_heatmap(data_dict, size=size, algorithm=algorithm)
-            print("✓ Generated speedup heatmap")
+    print("✓ Generated speedup heatmaps")
 
     print("All plots have been successfully generated!")
 
