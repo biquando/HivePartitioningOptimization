@@ -20,9 +20,11 @@ def load_data_from_directories(
         Dictionary of dataframes with structure {size: {algorithm: dataframe}}
     """
     all_data = {}
+    algorithm_times = {}
 
     for size in sizes:
         size_data = {}
+        algorithm_times[size] = {}
         for alg in algorithms:
             dir_path = os.path.join(base_path, f"algorithm_{alg}_{size}")
 
@@ -44,6 +46,10 @@ def load_data_from_directories(
                         )
                         algorithm = data.get("algorithm", f"algorithm_{alg}")
                         data_size = data.get("data_size_MiB", size)
+
+                        # Store the total algorithm time
+                        if "total_algorithm_time" in data:
+                            algorithm_times[size][alg] = data["total_algorithm_time"]
 
                         # Process results
                         for result in data.get("results", []):
@@ -81,7 +87,7 @@ def load_data_from_directories(
         if size_data:
             all_data[size] = size_data
 
-    return all_data
+    return all_data, algorithm_times
 
 
 def plot_best_speedup_by_size(data_dict):
@@ -217,58 +223,38 @@ def plot_best_speedup_by_size(data_dict):
     return {"algorithm1": best_speedups_alg1, "algorithm2": best_speedups_alg2}
 
 
-def plot_execution_time_by_size(data_dict):
+def plot_execution_time_by_size(algorithm_times):
     """
-    Compare absolute execution times (not speedup) for algorithm 1 and 2
-    across different data sizes
+    Compare total algorithm execution times for algorithm 1 and 2
+    across different data sizes using the total_algorithm_time field from the JSON files
     """
-    sizes = sorted(data_dict.keys())
+    sizes = sorted(algorithm_times.keys())
     exec_times_alg1 = []
     exec_times_alg2 = []
 
-    print(f"Plotting execution time by size with {len(sizes)} size points: {sizes}")
+    print(
+        f"Plotting total algorithm execution time by size with {len(sizes)} size points: {sizes}"
+    )
 
     for size in sizes:
-        # Process Algorithm 1 data
-        if 1 in data_dict[size]:
-            df = data_dict[size][1]
-            # Find the baseline (no partitioning) execution time for each table
-            baseline_times = df[df["partition_columns"] == "None"]["execution_time"]
-            if not baseline_times.empty:
-                avg_time = baseline_times.mean()
-                exec_times_alg1.append(avg_time)
-                print(
-                    f"  Size {size} GB (Alg 1): Average execution time = {avg_time:.2f}s"
-                )
-            else:
-                # Use average of all execution times if no baseline found
-                avg_time = df["execution_time"].mean()
-                exec_times_alg1.append(avg_time)
-                print(
-                    f"  Size {size} GB (Alg 1): No baseline found, using average time = {avg_time:.2f}s"
-                )
+        # Get Algorithm 1 execution time
+        if 1 in algorithm_times[size]:
+            exec_time = algorithm_times[size][1]
+            exec_times_alg1.append(exec_time)
+            print(
+                f"  Size {size} GB (Alg 1): Total algorithm execution time = {exec_time:.2f}s"
+            )
         else:
             exec_times_alg1.append(0)  # No data for this size
             print(f"  Size {size} GB (Alg 1): No data available")
 
-        # Process Algorithm 2 data
-        if 2 in data_dict[size]:
-            df = data_dict[size][2]
-            # Find the baseline (no partitioning) execution time for each table
-            baseline_times = df[df["partition_columns"] == "None"]["execution_time"]
-            if not baseline_times.empty:
-                avg_time = baseline_times.mean()
-                exec_times_alg2.append(avg_time)
-                print(
-                    f"  Size {size} GB (Alg 2): Average execution time = {avg_time:.2f}s"
-                )
-            else:
-                # Use average of all execution times if no baseline found
-                avg_time = df["execution_time"].mean()
-                exec_times_alg2.append(avg_time)
-                print(
-                    f"  Size {size} GB (Alg 2): No baseline found, using average time = {avg_time:.2f}s"
-                )
+        # Get Algorithm 2 execution time
+        if 2 in algorithm_times[size]:
+            exec_time = algorithm_times[size][2]
+            exec_times_alg2.append(exec_time)
+            print(
+                f"  Size {size} GB (Alg 2): Total algorithm execution time = {exec_time:.2f}s"
+            )
         else:
             exec_times_alg2.append(0)  # No data for this size
             print(f"  Size {size} GB (Alg 2): No data available")
@@ -298,9 +284,9 @@ def plot_execution_time_by_size(data_dict):
         )
 
         plt.xticks(sizes, [f"{s} GB" for s in sizes])
-        plt.ylabel("Execution Time (seconds)")
+        plt.ylabel("Total Algorithm Execution Time (seconds)")
         plt.xlabel("Data Size")
-        plt.title("Comparison of Execution Times Across Data Sizes")
+        plt.title("Comparison of Total Algorithm Execution Times Across Data Sizes")
         plt.grid(True, linestyle="--", alpha=0.7)
         plt.legend()
 
@@ -334,10 +320,10 @@ def plot_execution_time_by_size(data_dict):
             fontsize=12,
             transform=plt.gca().transAxes,
         )
-        plt.title("Data Error: Execution Times Across Data Sizes")
+        plt.title("Data Error: Total Algorithm Execution Times Across Data Sizes")
 
     plt.tight_layout()
-    save_path = "plots/execution_time_by_size.png"
+    save_path = "plots/total_algorithm_execution_time.png"
     plt.savefig(save_path, dpi=300, bbox_inches="tight")
     plt.close()
 
@@ -533,9 +519,8 @@ def plot_speedup_vs_cardinality(data_dict, table_name="orders", size=1, algorith
     scatter = plt.scatter(
         table_df["cardinality_product"],
         -1 * table_df["time_difference_percent"],
-        c=table_df["column_count"],
         s=100 + 50 * table_df["column_count"],  # Size based on number of columns
-        cmap="viridis",
+        color="#3498db",
         alpha=0.7,
         edgecolors="black",
     )
@@ -559,9 +544,9 @@ def plot_speedup_vs_cardinality(data_dict, table_name="orders", size=1, algorith
     plt.title(f"Speedup vs. Cardinality for {table_name} Table ({size} GB)")
     plt.grid(True, linestyle="--", alpha=0.6)
 
-    # Add a color bar to show column count
-    cbar = plt.colorbar(scatter)
-    cbar.set_label("Number of Partition Columns")
+    # # Add a color bar to show column count
+    # cbar = plt.colorbar(scatter)
+    # cbar.set_label("Number of Partition Columns")
 
     # Add a trend line if enough points
     if len(table_df) >= 3:
@@ -650,7 +635,7 @@ def main():
 
     # Load data from all directories
     print("Loading data from directories...")
-    data_dict = load_data_from_directories()
+    data_dict, algorithm_times = load_data_from_directories()
 
     if not data_dict:
         print("No data found in the specified directories.")
@@ -666,7 +651,7 @@ def main():
     print("✓ Generated best speedup by size chart")
 
     # Plot 2: Execution time by size (not speedup)
-    plot_execution_time_by_size(data_dict)
+    plot_execution_time_by_size(algorithm_times)
     print("✓ Generated execution time by size chart")
 
     # Plot 3: Products column speedup
@@ -684,6 +669,11 @@ def main():
         for algorithm in algorithms:
             plot_speedup_vs_cardinality(
                 data_dict, table_name="orders", size=size, algorithm=algorithm
+            )
+    for size in sizes:
+        for algorithm in algorithms:
+            plot_speedup_vs_cardinality(
+                data_dict, table_name="products", size=size, algorithm=algorithm
             )
     print("✓ Generated speedup vs cardinality charts")
 
